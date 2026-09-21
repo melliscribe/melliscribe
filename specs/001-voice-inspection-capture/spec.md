@@ -261,7 +261,9 @@ effect.
   across inspections and across seasons.
 - **FR-006b**: Each populated field MUST also store the verbatim phrase from
   the dictation that it was derived from, and MUST display that phrase to the
-  beekeeper alongside the coded value.
+  beekeeper alongside the coded value. When a value is derived from several
+  non-contiguous parts of the dictation, the system MUST store every
+  contributing phrase rather than only one or a paraphrase of both.
 - **FR-006c**: Controlled vocabulary values MUST be language-neutral
   identifiers with a display label in each supported language. A record
   dictated in French and an equivalent one dictated in English MUST store the
@@ -270,15 +272,43 @@ effect.
   field's controlled vocabulary, the system MUST flag that field as uncertain
   and retain the verbatim phrase. It MUST NOT force the observation into the
   nearest available value.
+- **FR-006e**: An uncertain field MAY carry a proposed value, but that value
+  MUST be presented as a proposal requiring confirmation and MUST NOT be
+  treated as set for any purpose — history, export, or trend — until the
+  beekeeper confirms it. An uncertain field with no plausible proposal carries
+  no value at all.
+- **FR-006f**: When the dictation contains a spoken self-correction, the later
+  statement MUST supersede the earlier one, and the field MUST record the
+  corrected value. If the correction is itself unclear, the field MUST be
+  flagged as uncertain rather than resolved to either statement.
+- **FR-006g**: Controlled vocabularies MUST be defined, documented and
+  versioned before any extraction behaviour ships. The definition MUST state,
+  for each field, its permitted values, the criteria for membership, and
+  whether the values are ordered. Fields without a controlled vocabulary MUST
+  be listed explicitly.
+- **FR-006h**: A controlled vocabulary value that has been used by an existing
+  record MUST NOT be removed or given a different meaning. A value that is no
+  longer appropriate is marked superseded and retained, so that historical
+  records keep meaning what they meant when they were written.
+- **FR-006i**: Every controlled vocabulary value MUST have a display label in
+  both supported languages. A value missing a label in either language MUST
+  fail the build.
 - **FR-007**: The system MUST mark as unknown any field the dictation did not
   cover, and MUST NOT populate it with an inferred, default, or carried-over
   value.
-- **FR-008**: The system MUST mark as uncertain any field it extracted with low
-  confidence, and MUST surface that uncertainty to the beekeeper for
-  confirmation.
+- **FR-008**: The system MUST mark as uncertain any field it extracted with a
+  confidence below an explicitly defined threshold, and MUST surface that
+  uncertainty to the beekeeper for confirmation.
+- **FR-008a**: The uncertainty threshold MUST be an explicit, versioned,
+  documented value rather than an implementation detail, MUST be recorded in a
+  record's provenance, and MUST be calibrated against the evaluation set so
+  that SC-003 holds. Changing it is a change to extraction behaviour and
+  carries the same evaluation obligation as changing a prompt.
 - **FR-009**: The system MUST distinguish, visibly and in the stored record,
   between values it derived itself and values the beekeeper entered or
-  confirmed.
+  confirmed. The field's status is the beekeeper-facing signal; the underlying
+  confidence score MUST NOT be presented as a number, because a number invites
+  the beekeeper to second-guess a threshold rather than trust their own ears.
 - **FR-010**: The system MUST treat every extracted value as a draft until the
   beekeeper confirms it, and a beekeeper's correction MUST permanently take
   precedence over any later automated interpretation of the same recording.
@@ -291,8 +321,18 @@ effect.
   dictation was in French or in English.
 - **FR-014**: The system MUST interpret the beekeeping vocabulary listed in
   the project's bilingual domain glossary — equipment, colony conditions and
-  common treatment products — at the accuracy threshold set in SC-005, in both
+  common treatment products — at the recall threshold set in SC-010, in both
   supported languages.
+- **FR-014a**: The bilingual domain glossary MUST be a versioned artifact in
+  the repository with a named owner, holding both language forms of every term.
+  Terms are added in the pull request that first relies on them.
+- **FR-014b**: A domain term absent from the glossary MUST NOT cause extraction
+  to fail. The surrounding observation is extracted on its merits, and the
+  field is flagged as uncertain if the missing term was load-bearing.
+- **FR-014c**: Treatment products and doses have no controlled vocabulary and
+  MUST always be stored as spoken. A product name or dose that was not heard
+  clearly MUST be flagged as uncertain, never resolved to the nearest known
+  product.
 - **FR-015**: The system MUST associate each record with exactly one hive, and
   MUST flag rather than guess when it cannot determine which hive was meant.
 - **FR-015a**: Beekeepers MUST be able to create a hive by giving it an
@@ -304,9 +344,20 @@ effect.
 - **FR-015d**: Hive identifiers MUST be unique within a beekeeper's hives, and
   the system MUST refuse a duplicate rather than silently attaching the record
   to the wrong colony.
+- **FR-015e**: When a dictation appears to cover more than one hive, the system
+  MUST produce a single record with the hive field flagged and MUST tell the
+  beekeeper why. It MUST NOT split the dictation into several records, and MUST
+  NOT silently attribute the whole dictation to one of the hives named.
 - **FR-016**: The system MUST default the inspection date to when the recording
   was made, and MUST use a date spoken in the dictation in preference to that
   default when one is given.
+- **FR-016a**: When a spoken date is more than one day from the capture date,
+  the system MUST flag the date field rather than silently accepting either.
+  Both the spoken date and the capture date MUST remain visible to the
+  beekeeper resolving it.
+- **FR-016b**: A dictation that is intelligible but contains no inspection
+  content MUST NOT produce a record. The beekeeper MUST be told that no
+  inspection was recognised, and the recording MUST be retained.
 
 **Processing and queueing**
 
@@ -316,6 +367,15 @@ effect.
   processing and which have failed.
 - **FR-019**: The system MUST retry failed processing without the beekeeper
   having to re-record, and MUST preserve the recording across failures.
+- **FR-019a**: When transcription succeeds and extraction fails, the transcript
+  MUST be retained and retryable on its own. The beekeeper MUST NOT be made to
+  re-transcribe work that already succeeded.
+- **FR-019b**: A failure MUST record which stage produced it, so that a wrong
+  record can be attributed to transcription or to extraction rather than to
+  "the system".
+- **FR-019c**: Re-processing after a language correction MUST follow the same
+  failure rules as first processing: on failure the previous record MUST remain
+  intact and the beekeeper MUST be told the re-processing did not take.
 - **FR-020**: The system MUST ensure that submitting the same recording more
   than once does not produce duplicate inspection records.
 - **FR-021**: The system MUST warn the beekeeper before local storage is
@@ -334,7 +394,12 @@ effect.
 **Language and privacy**
 
 - **FR-025**: The entire flow — capture, review, correction, and every message
-  and error — MUST be available in both French and English.
+  and error — MUST be available in both French and English. This explicitly
+  includes API error messages, validation messages, retention and expiry
+  notices, and vocabulary display labels. Maintainer-facing CLI output is out
+  of scope.
+- **FR-025a**: Dates, numbers and quantities shown in the review flow MUST be
+  formatted for the active language.
 - **FR-026**: The beekeeper's language MUST be a persistent account setting
   that applies to every recording, MUST remain available offline, and MUST NOT
   be inferred from network location.
@@ -345,6 +410,17 @@ effect.
   language.
 - **FR-026c**: Re-processing after a language correction MUST preserve any
   fields the beekeeper had already confirmed.
+- **FR-026d**: The active language MUST be visible on the capture screen
+  without the beekeeper having to act, so that a wrong setting is noticeable
+  before a dictation is spoken rather than after.
+- **FR-026e**: When the language detected in a recording disagrees with the
+  account setting, the system MUST show that disagreement on the record and
+  offer re-processing against the detected language. It MUST NOT switch
+  languages on its own.
+- **FR-026f**: A dictation that mixes both supported languages MUST be
+  extracted on its merits against the account language, with any field whose
+  source phrase was in the other language flagged as uncertain. Mixed input
+  MUST NOT cause the extraction to be abandoned.
 - **FR-027**: Recordings and transcripts are personal operational data and MUST
   NOT be exposed beyond the beekeeper's own account, nor sent to any external
   service the beekeeper has not been informed about.
@@ -360,7 +436,10 @@ effect.
 - **FR-027e**: The system MUST tell the beekeeper, before retention expiry
   removes anything, that it is about to happen.
 - **FR-027f**: A beekeeper's recordings MUST NOT be used as evaluation material
-  without their explicit, separately given consent.
+  without their explicit, separately given consent. Consent MUST be recorded
+  per recording with its date, and every entry in an evaluation dataset MUST
+  carry either a consent reference or a marker identifying it as purpose-made,
+  so that the provenance of the dataset can be audited rather than asserted.
 - **FR-028**: The system MUST record the cost and latency of each automated
   interpretation it performs.
 
@@ -406,13 +485,20 @@ effect.
   saved record in under 90 seconds of their attention, including review.
 - **SC-002**: 100% of inspection dictations can be captured with no network
   connection, and no recording is lost between capture and processing.
-- **SC-003**: Of the fields a beekeeper has to correct after review, at least
-  85% were already flagged as unknown or uncertain — that is, fewer than 15% of
-  corrections are of values the system asserted confidently and got wrong.
+- **SC-003**: Across all fields corrected by beekeepers in a rolling 30-day
+  window, at least 85% had been flagged as unknown or uncertain before the
+  correction — that is, fewer than 15% of corrections are of values the system
+  asserted confidently and got wrong. Counted per field, not per record, over
+  every account.
 - **SC-004**: No field is ever populated from a dictation that did not mention
-  it: zero tolerance, measured on the evaluation set.
-- **SC-005**: Extraction quality on French dictations is within 5 percentage
-  points of English on the same evaluation set.
+  it. Zero tolerance on the evaluation set, where any occurrence fails the
+  build. In production the same rule holds, and an occurrence reported by a
+  beekeeper is treated as a defect and added to the evaluation set.
+- **SC-005**: Field accuracy on French dictations is within 5 percentage points
+  of English on the paired evaluation set. A field counts as accurate only when
+  its coded value and its status both match the reference — a right value
+  carrying the wrong status is not a correct extraction, because the status is
+  what tells the beekeeper whether to trust it.
 - **SC-006**: 90% of beekeepers complete their first dictated inspection
   without assistance, wearing gloves, outdoors.
 - **SC-007**: A recording captured offline is processed and its record
@@ -422,6 +508,11 @@ effect.
 - **SC-009**: Every record can be traced to its originating audio for at least
   12 months after the inspection, and to its transcript for the full life of
   the record.
+- **SC-010**: At least 95% of glossary terms present in a dictation are
+  recognised as that term, in each supported language, measured on the
+  evaluation set.
+- **SC-011**: Paired French and English dictations of the same inspection
+  produce identical coded values on every field both dictations cover.
 
 ## Assumptions
 
@@ -462,11 +553,37 @@ effect.
   dictation that mixes the two, or one recorded under the wrong setting, is
   recoverable at review by correcting the language and re-processing. Other
   languages are out of scope.
+- **Vocabularies are unordered**: Controlled vocabulary values are categories,
+  not a scale. "Nervous" does not sit numerically between "calm" and
+  "defensive", and nothing derives a trend by comparing them. A field that
+  genuinely needs ordering must say so in its definition under FR-006g.
+- **A record may be entirely flagged**: A dictation the system understood
+  almost nothing of still produces a record, with every field flagged. This is
+  a correct outcome rather than a failure, and is presented as a record needing
+  attention rather than as an error.
+- **One ASR backend serves both languages**: The plan assumes a single
+  transcription backend can reach French/English parity within SC-005. This is
+  an assumption, not a finding — ADR-0002 must validate it against real
+  bilingual audio, and a backend that cannot is disqualified regardless of its
+  English accuracy.
+- **Segment-level timestamps are a hard dependency**: Playing a field back
+  (FR-023) requires knowing where in the audio its phrase was spoken. A
+  transcription backend that cannot supply segment timings cannot satisfy this
+  feature.
+- **Evaluation gates are per stage**: Transcription and extraction are
+  evaluated separately, against separate datasets, with separate pass
+  thresholds and separately recorded baselines. A regression blocks the merge
+  for the stage it occurred in; "the pipeline got worse" is not an actionable
+  result.
 - **Evaluation data exists**: Building this feature includes assembling an
   evaluation set of real dictated inspections in both languages, held in
   private storage. Without it, none of the quality criteria above are
   measurable. That set is built from consented or purpose-made recordings —
   a beekeeper's own inspections are not quietly repurposed as eval material.
+  The set MUST include at least 50 dictations per language, of which at least
+  20 are paired — the same inspection dictated once in each language — since
+  SC-005 and SC-011 are otherwise measuring noise. Paired recordings are
+  purpose-made for this reason, not found.
 - **Retention applies to audio only**: Inspection records and transcripts are
   kept for the life of the account. Twelve months is the default lifespan of
   the audio alone, chosen because disputes surface a season later and because

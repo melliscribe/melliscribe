@@ -24,7 +24,7 @@
 
 ## Feature Readiness
 
-- [x] All functional requirements have clear acceptance criteria
+- [ ] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
@@ -114,3 +114,29 @@ The regression above is fixed; all 16 items pass again.
 Retention is last by priority on purpose: it makes no inspection easier, but
 voice capture with no answer to "where does my voice go, and for how long" is
 not a product anyone adopts.
+
+## Re-validation after the extraction/i18n checklist review — 2026-09-21
+
+The `extraction-i18n.md` review produced 19 new functional requirements and 2
+new success criteria. Re-checked all 16 items.
+
+**One regression, the same item as before**: "All functional requirements have
+clear acceptance criteria" fails again. Several amendments added real
+user-facing behaviour with no Given/When/Then covering it:
+
+- FR-016b — an intelligible dictation containing no inspection content
+- FR-016a — a spoken date more than a day from the capture date
+- FR-026d — the active language visible at capture
+- FR-026e — detected language disagreeing with the account setting
+- FR-026f — a dictation mixing both languages
+- FR-015e — a dictation covering several hives
+- FR-019a/b/c — extraction failing after transcription succeeded
+
+The other 15 items pass, and several improved: success criteria are more
+measurable (SC-003 gained a window and a counting rule, SC-005 a definition of
+accuracy), and the ambiguity count dropped substantially.
+
+Closing this needs roughly eight scenarios across User Story 1 and User Story 2,
+or a small user story for the language-correction flow. Worth doing before
+`/speckit-tasks`, for the same reason as last time: tasks are generated from
+scenarios, and a requirement with none gets quietly under-built.
