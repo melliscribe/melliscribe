@@ -55,6 +55,8 @@ worse.
 - Prompts are versioned artifacts in the repository, not inline string literals
   edited in place. Model, prompt version, and extraction schema version MUST be
   recorded on every AI-derived record.
+- Evals MUST cover both supported languages (Principle VIII). A behavior
+  evaluated only in English is not evaluated.
 - AI output is a draft, never the record. Raw transcripts remain retrievable
   alongside anything derived from them; every AI-derived field is visibly
   marked as such and is editable; a user edit permanently wins over any later
@@ -162,6 +164,37 @@ this one was built this way, and is the same person. An ADR is the only cheap
 defense against relitigating a settled decision — or worse, silently reversing
 it.
 
+### VIII. Bilingual By Construction
+
+The application is fully usable in French and in English. Neither is a
+translation of the other bolted on afterwards.
+
+- Every user-facing string MUST come from a translation catalogue. Hardcoded
+  user-facing text in components, templates, or API error messages is
+  forbidden, and CI MUST fail on a missing or untranslated key in either
+  language.
+- Voice capture MUST work in both languages. The operator's language is
+  selectable and persists offline; it is never inferred from server-side
+  locale or network geolocation.
+- Extraction MUST produce the same structured record regardless of input
+  language. Schema field names and enum values are language-neutral
+  identifiers, never translated strings — the translation happens at display
+  time, not in the data.
+- A maintained bilingual glossary of beekeeping vocabulary (hausse/super,
+  cadre/frame, essaimage/swarming, couvain/brood) is part of the
+  transcription and extraction pipeline, and new domain terms are added to it
+  in the same pull request that first relies on them.
+- Dates, numbers, and units MUST be formatted per the active locale.
+- A feature ships in both languages or it does not ship. Shipping English-only
+  and translating later is forbidden.
+
+**Rationale**: Retrofitted internationalization is one of the most expensive
+refactors there is, and a solo maintainer will never find the week it costs.
+The specific risk here is the AI pipeline: transcription and extraction are
+language-dependent in a way that a translation catalogue does not cover, so
+French support that is not tested from the first commit will silently be
+worse — mangled domain vocabulary, and extraction quality no one measured.
+
 ## Project Context
 
 - **License**: AGPL-3.0. The repository is public and every push is
@@ -220,8 +253,9 @@ site.
   bug fix begins with a failing regression test. A pull request that adds
   behavior with no test that would have failed beforehand MUST NOT merge.
 - **CI gates**, all blocking: `ruff` lint and format, the type checker, the full
-  test suite, pre-commit hooks, generated-type drift (Principle IV), and evals
-  for any touched LLM behavior (Principle II).
+  test suite, pre-commit hooks, generated-type drift (Principle IV), evals
+  for any touched LLM behavior (Principle II), and translation-catalogue
+  completeness in both languages (Principle VIII).
 - Schema and API changes ship with the migration, the regenerated client types,
   and tests for all of it, in the same pull request.
 - Changes to prompts, models, or extraction schemas include their eval result in
@@ -267,4 +301,4 @@ honestly; it is never left standing as decoration. Runtime, day-to-day
 development guidance lives in `CLAUDE.md`, which MUST NOT contradict this
 document; if it does, this document governs and `CLAUDE.md` is corrected.
 
-**Version**: 2.0.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21
+**Version**: 2.1.0 | **Ratified**: 2026-09-21 | **Last Amended**: 2026-09-21
