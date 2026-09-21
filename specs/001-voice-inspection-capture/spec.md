@@ -87,6 +87,33 @@ other part of this feature built.
     **When** they try to create another hive with it, **Then** the system
     refuses and explains why, rather than accepting it and later attaching a
     record to the wrong colony.
+12. **Given** a beekeeper about to record, **When** they look at the capture
+    screen, **Then** the active language is visible without them having to act
+    — so a wrong setting is noticeable before a dictation is spoken rather
+    than after.
+13. **Given** a recording whose detected language disagrees with the account
+    setting, **When** the record is produced, **Then** the disagreement is
+    shown on the record and re-processing against the detected language is
+    offered — and the system has not switched languages on its own.
+14. **Given** a dictation that mixes French and English, **When** the record is
+    produced, **Then** it is extracted against the account language, any field
+    whose source phrase was in the other language is flagged as uncertain, and
+    the extraction is not abandoned.
+15. **Given** a re-processing that fails, **When** the beekeeper checks the
+    record, **Then** the previous record is intact and they are told the
+    re-processing did not take.
+16. **Given** a dictation that appears to cover more than one hive, **When** the
+    record is produced, **Then** it is a single record with the hive field
+    flagged and an explanation of why — not several records, and not the whole
+    dictation attributed to one of the hives named.
+17. **Given** a dictation stating a date more than one day from when the
+    recording was made, **When** the record is produced, **Then** the date
+    field is flagged with both dates visible, rather than either being silently
+    accepted.
+18. **Given** a dictation that is intelligible but contains no inspection
+    content, **When** it is processed, **Then** no record is produced, the
+    beekeeper is told no inspection was recognised, and the recording is
+    retained.
 
 ---
 
@@ -127,6 +154,13 @@ record equivalent to the one the live flow would produce from the same speech.
 5. **Given** an audio file in an unsupported format or one that contains no
    intelligible speech, **When** it is submitted, **Then** the beekeeper is
    told why no record could be produced and the file is not discarded.
+6. **Given** a recording whose transcription succeeded but whose extraction
+   failed, **When** the beekeeper retries it, **Then** the existing transcript
+   is reused and the audio is not transcribed a second time.
+7. **Given** any processing failure, **When** the beekeeper or the maintainer
+   looks at it, **Then** it records which stage produced it, so a wrong record
+   can be attributed to transcription or to extraction rather than to "the
+   system".
 
 ---
 

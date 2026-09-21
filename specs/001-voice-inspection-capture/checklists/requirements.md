@@ -24,7 +24,7 @@
 
 ## Feature Readiness
 
-- [ ] All functional requirements have clear acceptance criteria
+- [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
@@ -140,3 +140,22 @@ Closing this needs roughly eight scenarios across User Story 1 and User Story 2,
 or a small user story for the language-correction flow. Worth doing before
 `/speckit-tasks`, for the same reason as last time: tasks are generated from
 scenarios, and a requirement with none gets quietly under-built.
+
+## Gap closed again — 2026-09-21
+
+Nine acceptance scenarios added; all 16 items pass.
+
+User Story 1 gained seven (scenarios 12-18): the active language visible at
+capture (FR-026d), a detected language disagreeing with the account setting
+(FR-026e), a dictation mixing both languages (FR-026f), a failed re-processing
+leaving the prior record intact (FR-019c), a dictation covering several hives
+(FR-015e), a spoken date more than a day from capture (FR-016a), and an
+intelligible dictation with no inspection content (FR-016b).
+
+User Story 2 gained two (scenarios 6-7): a transcript being reused when only
+extraction failed (FR-019a), and a failure recording which stage produced it
+(FR-019b).
+
+User Story 1 now carries 18 scenarios, which is a lot for one story. That is
+appropriate rather than accidental — it is the story holding the entire product
+promise, and each scenario covers a distinct way the promise can fail.
