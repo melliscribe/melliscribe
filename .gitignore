@@ -1,0 +1,174 @@
+# ---------------------------------------------------------------------------
+# Claude Code / Spec Kit
+# ---------------------------------------------------------------------------
+# Per-machine permission allowlist. The rest of .claude/ (the speckit skills)
+# is shared tooling and stays tracked.
+.claude/settings.local.json
+
+# ---------------------------------------------------------------------------
+# Secrets & local configuration
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# ---------------------------------------------------------------------------
+# Python (backend: FastAPI + Pydantic v2)
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+wheels/
+*.egg-info/
+.eggs/
+develop-eggs/
+sdist/
+share/python-wheels/
+MANIFEST
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.uv/
+
+# Testing & coverage
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.hypothesis/
+nosetests.xml
+*.cover
+
+# Type checkers & linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+.ty_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Node / TypeScript (frontend: React PWA)
+# ---------------------------------------------------------------------------
+node_modules/
+.pnp
+.pnp.js
+.yarn/cache/
+.yarn/install-state.gz
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+build/
+dist/
+out/
+.next/
+.nuxt/
+.vite/
+.turbo/
+*.tsbuildinfo
+
+# Vite / bundler caches
+.cache/
+.parcel-cache/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# PWA generated assets (regenerated on build)
+sw.js
+workbox-*.js
+
+# ---------------------------------------------------------------------------
+# Capacitor / mobile
+# ---------------------------------------------------------------------------
+# Native projects are generated from the web build by `npx cap add`.
+# Track them only if you hand-edit native code; if so, remove these lines.
+/android/
+/ios/
+.capacitor/
+*.keystore
+!debug.keystore
+*.mobileprovision
+*.p12
+*.p8
+
+# ---------------------------------------------------------------------------
+# Database / local data
+# ---------------------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+pgdata/
+postgres-data/
+
+# ---------------------------------------------------------------------------
+# AI pipeline artifacts
+# ---------------------------------------------------------------------------
+# Recordings and transcripts are personal operational data (constitution,
+# Technology Constraints) and must never reach the repository.
+/recordings/
+/transcripts/
+*.wav
+*.m4a
+*.mp3
+*.ogg
+*.webm
+
+# Model weights and eval run outputs. Eval *datasets* and *results you intend
+# to review in a PR* are versioned deliberately, so keep them out of here.
+*.gguf
+*.safetensors
+*.onnx
+*.pt
+*.bin
+/eval-runs/
+
+# ---------------------------------------------------------------------------
+# Editors & OS
+# ---------------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------------
+# Misc
+# ---------------------------------------------------------------------------
+*.log
+tmp/
+.tmp/
