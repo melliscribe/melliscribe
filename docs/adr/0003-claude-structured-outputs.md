@@ -94,3 +94,39 @@ mode is silent partial extraction.
 
 **A smaller model with a larger prompt.** Deferred, not rejected — it is a valid
 future optimisation, and the eval set is what makes it decidable.
+
+## Addendum — 2026-09-23: grammar size, and what an extraction costs
+
+Appended, not edited: the decision stands; two of its assumptions met reality.
+
+**The typed schema did not compile.** The first live run returned
+`400 — The compiled grammar is too large` for every request. Structured outputs
+compile each distinct object type in the schema, and a typed object per field —
+five vocabulary fields plus three frame counts, each with its own value type —
+exceeded the limit (bisected: about nine such objects fit). The extraction
+schema is now **version 3**: one `Observation` type, in a list, naming its
+field. It compiles once and is half the size (6.7 KB). The schema no longer
+restricts a value to its field's vocabulary or forces every field to be
+addressed; `pipeline/extraction/observations.py` closes both gaps in code,
+always on the safe side — an out-of-vocabulary value is unmappable, a missing
+field is unknown. The single-source-of-truth chain is unchanged: the schema is
+still generated from Pydantic.
+
+**Consequence to watch**: adding fields adds entries to one enum, not new
+object types, so the schema should stay well under the limit. A new *kind* of
+field (not a vocabulary value, not a count) is a new object type and should be
+checked against the API before it merges.
+
+**First smoke eval (10 synthetic cases, 5 fr/en pairs, prompt v3)**: field
+accuracy 100% in both languages, no SC-004 violation, no paired disagreement.
+Total cost $0.21 — $0.021 per record — with 79,902 cache-read tokens over the
+nine calls after the first. Latency p50 5.4 s, p95 8.1 s.
+
+**"Per-record cost is dominated by the cache" — measured: no** (closes T129 and
+checklist item CHK043). Derived from that run: cache reads $0.040, the first
+call's cache write about $0.056, and about $0.11 of output tokens including
+thinking. In steady state a record costs about $0.016, of which the cached
+prefix is about a quarter; **output dominates**. So the lever, if cost ever
+matters, is effort or output length measured against the eval set — not the
+model tier alone, and not the prefix. The trace summary now records input and
+output token totals so the next run gives this breakdown directly.

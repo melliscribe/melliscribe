@@ -28,6 +28,8 @@ if TYPE_CHECKING:
     import argparse
     from collections.abc import Sequence
 
+    from melliscribe.models.trace import LLMTrace
+
 
 def add_parser(subparsers: Any) -> None:  # noqa: ANN401 - argparse's private type
     """Register `trace`.
@@ -59,32 +61,34 @@ def percentile(values: Sequence[int], fraction: float) -> int | None:
     return ordered[min(len(ordered) - 1, max(0, round(fraction * len(ordered)) - 1))]
 
 
-def summarise(rows: Sequence[LLMTraceRow]) -> dict[str, Any]:
+def summarise(rows: Sequence[LLMTraceRow] | Sequence[LLMTrace]) -> dict[str, Any]:
     """Aggregate trace rows.
 
     Args:
-        rows: The trace rows.
+        rows: The trace rows, from the database or held in memory.
 
     Returns:
         Per stage and model: calls, outcomes, latency p50/p95, cost, cache
         reads; cost per inspection; and any rate used without a checked date.
     """
-    groups: dict[tuple[str, str], list[LLMTraceRow]] = defaultdict(list)
+    groups: dict[tuple[str, str], list[Any]] = defaultdict(list)
     per_recording: dict[str, Decimal] = defaultdict(Decimal)
     for row in rows:
-        groups[(row.stage, row.model)].append(row)
+        groups[(str(row.stage), row.model)].append(row)
         per_recording[str(row.recording_id)] += row.cost_usd
     stages = [
         {
             "stage": stage,
             "model": model,
             "calls": len(items),
-            "errors": sum(r.outcome == "error" for r in items),
-            "timeouts": sum(r.outcome == "timeout" for r in items),
+            "errors": sum(str(r.outcome) == "error" for r in items),
+            "timeouts": sum(str(r.outcome) == "timeout" for r in items),
             "fallbacks": sum(r.fallback_taken for r in items),
             "latency_p50_ms": percentile([r.latency_ms for r in items], 0.5),
             "latency_p95_ms": percentile([r.latency_ms for r in items], 0.95),
             "cost_usd": str(sum((r.cost_usd for r in items), Decimal(0))),
+            "input_tokens": sum(r.input_tokens or 0 for r in items),
+            "output_tokens": sum(r.output_tokens or 0 for r in items),
             "cache_read_tokens": sum(r.cache_read_tokens or 0 for r in items),
         }
         for (stage, model), items in sorted(groups.items())

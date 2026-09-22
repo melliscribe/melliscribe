@@ -11,6 +11,12 @@ carrying a JSON Schema **generated from the Pydantic extraction model** — neve
 hand-written, or the single-source-of-truth chain breaks at its most important
 link.
 
+Since schema version 3 the per-field results are **one list of observations**,
+each naming its field: a typed object per field produced a grammar too large
+for structured outputs (ADR-0003 addendum). An out-of-vocabulary value is read
+as unmappable and a missing field as unknown, in
+`pipeline/extraction/observations.py`.
+
 Structured outputs mean the response is schema-valid by construction. There is
 no JSON-repair path, no prose-stripping, no retry-on-parse-failure. If those
 appear in the code, the contract is being worked around rather than used.

@@ -1,0 +1,244 @@
+{
+  "stage": "extraction",
+  "summary": {
+    "cases": {
+      "fr": 5,
+      "en": 5
+    },
+    "accuracy": {
+      "fr": 100.0,
+      "en": 100.0
+    },
+    "parity_gap": 0.0,
+    "unmentioned_populated": [],
+    "paired_disagreements": [],
+    "errors": []
+  },
+  "outcomes": [
+    {
+      "case_id": "smoke-full-fr",
+      "language": "fr",
+      "pair_id": "smoke-full",
+      "correct": {
+        "hive": true,
+        "inspection_date": true,
+        "queen_seen": true,
+        "brood": true,
+        "stores": true,
+        "temperament": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "3",
+        "inspection_date": "2026-05-12",
+        "queen_seen": "seen",
+        "brood": "all_stages",
+        "stores": "adequate",
+        "temperament": "calm"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-full-en",
+      "language": "en",
+      "pair_id": "smoke-full",
+      "correct": {
+        "hive": true,
+        "inspection_date": true,
+        "queen_seen": true,
+        "brood": true,
+        "stores": true,
+        "temperament": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "3",
+        "inspection_date": "2026-05-12",
+        "queen_seen": "seen",
+        "brood": "all_stages",
+        "stores": "adequate",
+        "temperament": "calm"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-sparse-fr",
+      "language": "fr",
+      "pair_id": "smoke-sparse",
+      "correct": {
+        "hive": true,
+        "queen_seen": true,
+        "temperament": true,
+        "brood": true,
+        "stores": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "La Grise",
+        "queen_seen": "not_looked_for",
+        "temperament": "nervous"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-sparse-en",
+      "language": "en",
+      "pair_id": "smoke-sparse",
+      "correct": {
+        "hive": true,
+        "queen_seen": true,
+        "temperament": true,
+        "brood": true,
+        "stores": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "La Grise",
+        "queen_seen": "not_looked_for",
+        "temperament": "nervous"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-none-fr",
+      "language": "fr",
+      "pair_id": "smoke-none",
+      "correct": {},
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {},
+      "error": null
+    },
+    {
+      "case_id": "smoke-none-en",
+      "language": "en",
+      "pair_id": "smoke-none",
+      "correct": {},
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {},
+      "error": null
+    },
+    {
+      "case_id": "smoke-counts-fr",
+      "language": "fr",
+      "pair_id": "smoke-counts",
+      "correct": {
+        "hive": true,
+        "brood": true,
+        "brood_pattern": true,
+        "brood_frames": true,
+        "stores_frames": true,
+        "bee_frames": true,
+        "stores": true,
+        "queen_seen": true,
+        "temperament": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "3",
+        "brood": "all_stages",
+        "brood_pattern": "solid",
+        "brood_frames": "5",
+        "stores_frames": "2",
+        "bee_frames": "8"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-counts-en",
+      "language": "en",
+      "pair_id": "smoke-counts",
+      "correct": {
+        "hive": true,
+        "brood": true,
+        "brood_pattern": true,
+        "brood_frames": true,
+        "stores_frames": true,
+        "bee_frames": true,
+        "stores": true,
+        "queen_seen": true,
+        "temperament": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "3",
+        "brood": "all_stages",
+        "brood_pattern": "solid",
+        "brood_frames": "5",
+        "stores_frames": "2",
+        "bee_frames": "8"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-approx-fr",
+      "language": "fr",
+      "pair_id": "smoke-approx",
+      "correct": {
+        "hive": true,
+        "brood_frames": true,
+        "brood_pattern": true,
+        "stores_frames": true,
+        "stores": true,
+        "bee_frames": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "La Grise",
+        "brood_pattern": "patchy",
+        "stores_frames": "5"
+      },
+      "error": null
+    },
+    {
+      "case_id": "smoke-approx-en",
+      "language": "en",
+      "pair_id": "smoke-approx",
+      "correct": {
+        "hive": true,
+        "brood_frames": true,
+        "brood_pattern": true,
+        "stores_frames": true,
+        "stores": true,
+        "bee_frames": true
+      },
+      "unmentioned_populated": [],
+      "is_inspection_correct": true,
+      "values": {
+        "hive": "La Grise",
+        "brood_pattern": "patchy",
+        "stores_frames": "5"
+      },
+      "error": null
+    }
+  ],
+  "traces": {
+    "stages": [
+      {
+        "stage": "extraction",
+        "model": "claude-opus-5",
+        "calls": 10,
+        "errors": 0,
+        "timeouts": 0,
+        "fallbacks": 0,
+        "latency_p50_ms": 5422,
+        "latency_p95_ms": 8092,
+        "cost_usd": "0.2126435",
+        "cache_read_tokens": 79902
+      }
+    ],
+    "recordings": 10,
+    "cost_per_recording_usd": "0.02126435",
+    "unpriced_models": []
+  },
+  "dataset": "smoke.jsonl",
+  "prompt_version": "3"
+}

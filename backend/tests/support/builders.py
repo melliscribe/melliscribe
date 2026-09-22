@@ -77,11 +77,51 @@ def heard(
     }
 
 
+FIELD_NAMES = (
+    "queen_seen",
+    "brood",
+    "brood_pattern",
+    "stores",
+    "temperament",
+    "brood_frames",
+    "stores_frames",
+    "bee_frames",
+)
+COUNT_NAMES = {"brood_frames", "stores_frames", "bee_frames"}
+
+
+def to_observation(name: str, heard_field: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert a per-field test value into a flat observation.
+
+    Args:
+        name: The field.
+        heard_field: A dict from `heard`, `counted`, `unmentioned` or `uncounted`.
+
+    Returns:
+        The observation, or None when the field was not mentioned.
+    """
+    if not heard_field["mentioned"]:
+        return None
+    is_count = name in COUNT_NAMES
+    return {
+        "field": name,
+        "value": None if is_count else heard_field["value"],
+        "number": heard_field["value"] if is_count else None,
+        "approximate": heard_field.get("approximate", False),
+        "unit": heard_field.get("unit") if is_count else None,
+        "confidence": heard_field["confidence"],
+        "phrases": heard_field["phrases"],
+        "issue": heard_field["issue"],
+    }
+
+
 def build_output(**overrides: Any) -> ExtractionOutput:
     """Build an extraction output where nothing was mentioned, then override.
 
+    Per-field keyword arguments (`temperament=heard(...)`) become observations.
+
     Args:
-        **overrides: Top-level fields to replace.
+        **overrides: Top-level fields, or per-field values, to set.
 
     Returns:
         The validated extraction output.
@@ -91,18 +131,16 @@ def build_output(**overrides: Any) -> ExtractionOutput:
         "hive_mentions": [],
         "covers_multiple_hives": False,
         "spoken_date": None,
-        "queen_seen": unmentioned(),
-        "brood": unmentioned(),
-        "stores": unmentioned(),
-        "temperament": unmentioned(),
-        "brood_pattern": unmentioned(),
-        "brood_frames": uncounted(),
-        "stores_frames": uncounted(),
-        "bee_frames": uncounted(),
+        "observations": [],
         "treatments": [],
         "actions_to_do": [],
         "detected_language": None,
     }
+    for name in FIELD_NAMES:
+        if name in overrides:
+            observation = to_observation(name, overrides.pop(name))
+            if observation is not None:
+                data["observations"].append(observation)
     data.update(overrides)
     return ExtractionOutput.model_validate(data)
 

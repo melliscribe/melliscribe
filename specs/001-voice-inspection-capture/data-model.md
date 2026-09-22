@@ -298,7 +298,8 @@ models in `backend/src/melliscribe/models/` are authoritative.
   implausible (negative, over 40, not a half step) and contradictory counts are
   `UNCERTAIN` with the new flag reasons `approximate_count`,
   `implausible_count` and `count_contradiction`, and carry no proposal.
-  Extraction schema version 2; prompt version 2.
+  Extraction schema version 3 (a flat list of observations, see ADR-0003
+  addendum); prompt version 3.
 - **Controlled vocabularies** as shipped (version 2):
   `queen_seen` = seen | not_seen | not_looked_for;
   `brood` = all_stages | no_eggs | no_brood | drone_brood_only;

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
+from melliscribe.cli.trace import summarise
 from melliscribe.evals.dataset import ExtractionCase
 from melliscribe.evals.dataset import TranscriptionCase
 from melliscribe.evals.dataset import load_manifest
@@ -130,12 +131,12 @@ def _run_extraction_stage(
         return None
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise MissingCredentialsError
+    sink = InMemoryTraceSink()
     extractor = ClaudeExtractor(
-        InMemoryTraceSink(),
-        prompt_version=args.prompt_version,
-        use_cache=not args.no_cache,
+        sink, prompt_version=args.prompt_version, use_cache=not args.no_cache
     )
     report = run_extraction(selected, extractor, get_private_storage())
+    report["traces"] = summarise(sink.traces)
     failures = check_extraction_gates(
         ExtractionSummary(**report["summary"]), _load_extraction_summary(baseline_path)
     )

@@ -167,9 +167,9 @@ suite exercises the scenario end to end with fake pipeline stages.
 | 1 — Pipeline without the app | **Blocked**: `melliscribe pipeline` fails at transcription with an attributed error until ADR-0002 picks a provider. `melliscribe extract` works on a transcript file given `ANTHROPIC_API_KEY`. |
 | 2 — Offline capture | **Pass** (Playwright, Chromium with a fake microphone, network off): confirmation shown only after the IndexedDB write; queue holds the recording. Server side: 201/200 only after a durable write (automated). |
 | 3 — Gloved review | **Not run** — needs beekeepers outdoors (SC-006, T125). |
-| 4 — Bilingual parity | **Blocked** on the full paired dataset (T093) and an API key. The parity and SC-011 checks are implemented and unit-tested. No language choice at recording time: **pass** (Playwright). |
+| 4 — Bilingual parity | **Pass on the smoke set** (2026-09-23): 5 synthetic fr/en pairs, 100% field accuracy in both languages, no paired disagreement. The full paired dataset (T093) is still to be recorded. No language choice at recording time: **pass** (Playwright). |
 | 5 — Deferred processing | **Pass** (automated): one record per recording, keyed by `custom_id`, results in any order, duplicate upload gives one record, failed recording retried without re-recording. |
 | 6 — Playback | **Pass** server side (automated range requests and segment references); the in-browser playback control is untested. |
 | 7 — Retention | **Pass** (automated): delete gives 204, record and transcript intact, 410 afterwards; `retention due/apply --dry-run` tested. |
 | 8 — Wrong language corrected | **Pass** (automated): re-transcribed in the new language, confirmed fields preserved, a failed re-process leaves the previous record. |
-| 9 — Observability | **Pass**: `melliscribe trace summary` against a live server shows the traced transcription failure. Non-zero `cache_read_tokens` needs an API key (T129). |
+| 9 — Observability | **Pass**: `melliscribe trace summary` shows traced calls; live extraction reads the cached prefix (`pytest -m live`, and 79,902 cache-read tokens over the smoke run). |

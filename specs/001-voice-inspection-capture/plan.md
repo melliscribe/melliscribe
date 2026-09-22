@@ -187,6 +187,10 @@ Divergences from this plan, written back per the constitution's workflow rule.
   was heard, with confidences); statuses, the threshold, hive matching and
   dates are applied in `domain/inspection/`, so they are versioned and tested
   independently of the model.
+- **Flat observation list (schema v3)**: a typed object per field exceeded the
+  structured-output grammar limit on the first live run. Observations are one
+  list naming their field; `pipeline/extraction/observations.py` restores the
+  per-field view and rejects out-of-vocabulary values (ADR-0003 addendum).
 - **Refusal fallback**: live extraction sends `fallbacks: "default"` (beta
   `server-side-fallback-2026-07-01`); the serving model is recorded in
   provenance and a fallback sets `fallback_taken` on the trace. Batches do not

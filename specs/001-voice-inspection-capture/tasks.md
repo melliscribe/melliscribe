@@ -300,7 +300,7 @@ pipeline code exists.
 - [X] T126 [P] Add `docs/` user-facing documentation naming every external service that receives user content, in user-facing terms (Principle III, FR-027)
 - [X] T127 [P] Add a CHANGELOG entry describing the user-visible feature, with no internal names, tests, CI or tooling mentioned (Constitution, Releases)
 - [X] T128 Walk every quickstart.md scenario end to end and record the results
-- [ ] T129 Measure whether extraction cost per record is dominated by the cached prefix, and record the finding in `docs/adr/0003-claude-structured-outputs.md` — this closes CHK043, the one checklist item left open on purpose — **Open — needs an API key**: run `pytest -m live` and `melliscribe trace summary` after a few extractions.
+- [X] T129 Measure whether extraction cost per record is dominated by the cached prefix, and record the finding in `docs/adr/0003-claude-structured-outputs.md` — this closes CHK043, the one checklist item left open on purpose — measured 2026-09-23: no, output dominates; the cached prefix is about a quarter of a steady-state record's ~$0.016 (ADR-0003 addendum)
 
 ---
 
@@ -398,5 +398,5 @@ superseding. Tests first, per the constitution.
 - [X] T142 [US1] Accept `brood_pattern` and the three counts in `RecordPatch` (`backend/src/melliscribe/models/api.py`), validated to non-negative half-frame steps, with a contract test in `backend/tests/contract/test_records_patch.py` per FR-010, FR-022 (missing)
 - [X] T143 [US1] Regenerate `backend/openapi.json` and `frontend/src/api/generated/` so the drift gate passes per Constitution IV (missing)
 - [X] T144 [US1] Add the brood pattern editor and a gloved count picker (large buttons, half-frame steps from 0 to 40, "not observed") to the review screen in `frontend/src/review/`, showing a flagged count with its phrase and no suggested number per FR-004, FR-022, FR-006k (missing)
-- [ ] T145 [US1] Extend the eval harness to score numeric counts and `brood_pattern`, add paired French/English synthetic smoke cases with counts (exact, approximate, faces, contradictory) to `backend/evals/datasets/smoke.jsonl`, and run `melliscribe eval run` for the prompt v2 and schema v2 change, with the result in the pull request per Constitution II, SC-005, SC-011 (missing) — **Partly done**: numeric scoring and four new paired smoke cases (exact counts, approximate count, faces) are in; the eval run itself needs `ANTHROPIC_API_KEY`
+- [X] T145 [US1] Extend the eval harness to score numeric counts and `brood_pattern`, add paired French/English synthetic smoke cases with counts (exact, approximate, faces, contradictory) to `backend/evals/datasets/smoke.jsonl`, and run `melliscribe eval run` for the prompt v2 and schema v2 change, with the result in the pull request per Constitution II, SC-005, SC-011 (missing) — run 2026-09-23 after moving to schema v3 (the typed schema exceeded the grammar limit): 10/10 cases, 100% fr and en, baseline in `backend/evals/baselines/smoke.extraction.json`
 - [X] T146 [P] Document the brood pattern field and the three counts in `specs/001-voice-inspection-capture/data-model.md` under Implementation notes per plan: data model (partial)

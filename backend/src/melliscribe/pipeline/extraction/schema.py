@@ -12,8 +12,20 @@ This model says what was heard. It does not decide statuses: the uncertainty
 threshold, hive matching and date rules live in `melliscribe.domain.inspection`
 so they are versioned, tested and identical whichever model extracts.
 
-Every field is required (nullable where absence is meaningful) so the model has
-to take a position on each one rather than silently omitting it.
+**Why observations are a flat list** (version 3). Giving each field its own
+typed object — one per vocabulary — produced a schema whose compiled grammar
+exceeded the structured-output limit ("the compiled grammar is too large"):
+every distinct object type is compiled separately, and fourteen did not fit.
+One [Observation][melliscribe.pipeline.extraction.schema.Observation] type in a
+list is compiled once. The schema therefore no longer restricts a value to its
+field's vocabulary, nor forces every field to be addressed;
+[read_observations][melliscribe.pipeline.extraction.observations.read_observations]
+closes both gaps in code, always on the safe side — an unknown value is
+unmappable, a missing field is unmentioned (SC-004).
+
+[ExtractedObservation][melliscribe.pipeline.extraction.schema.ExtractedObservation]
+and [ExtractedCount][melliscribe.pipeline.extraction.schema.ExtractedCount]
+remain as the per-field view the domain rules read.
 """
 
 from __future__ import annotations
@@ -27,13 +39,8 @@ from pydantic import Field
 
 from melliscribe.models.base import Model
 from melliscribe.models.language import Language
-from melliscribe.models.vocabulary import BroodPattern
-from melliscribe.models.vocabulary import BroodState
-from melliscribe.models.vocabulary import QueenSeen
-from melliscribe.models.vocabulary import StoresState
-from melliscribe.models.vocabulary import Temperament
 
-EXTRACTION_SCHEMA_VERSION = "2"
+EXTRACTION_SCHEMA_VERSION = "3"
 """Bumped on any change to this module; recorded in every record's provenance."""
 
 
@@ -166,6 +173,52 @@ class SpokenDate(Model):
     phrase: Phrase
 
 
+class ObservedField(StrEnum):
+    """The record fields an observation can be about."""
+
+    QUEEN_SEEN = "queen_seen"
+    BROOD = "brood"
+    BROOD_PATTERN = "brood_pattern"
+    STORES = "stores"
+    TEMPERAMENT = "temperament"
+    BROOD_FRAMES = "brood_frames"
+    STORES_FRAMES = "stores_frames"
+    BEE_FRAMES = "bee_frames"
+
+
+class Observation(Model):
+    """What was heard about one field. Absent from the list: not mentioned."""
+
+    field: ObservedField
+    value: str | None = Field(
+        description=(
+            "For a vocabulary field, the identifier of the value meant. Null "
+            "when the words fit no value, and always null for a frame count."
+        )
+    )
+    number: float | None = Field(
+        description=(
+            "For a frame count, the number said, in the unit said. Null for a "
+            "vocabulary field."
+        )
+    )
+    approximate: bool = Field(
+        description="For a frame count: said as a range or a hedge."
+    )
+    unit: CountUnit | None = Field(
+        description="For a frame count: frames or frame faces, as said."
+    )
+    confidence: float = Field(
+        description="From 0 to 1: how sure you are this is what was meant."
+    )
+    phrases: list[Phrase] = Field(
+        description="Every phrase this observation was derived from."
+    )
+    issue: ExtractionIssue | None = Field(
+        description="Why the field cannot be asserted confidently, if it cannot."
+    )
+
+
 class ExtractionOutput(Model):
     """Everything extraction heard in one dictation."""
 
@@ -182,16 +235,12 @@ class ExtractionOutput(Model):
         description="True when the dictation describes more than one hive."
     )
     spoken_date: SpokenDate | None
-    queen_seen: ExtractedObservation[QueenSeen]
-    brood: ExtractedObservation[BroodState]
-    stores: ExtractedObservation[StoresState]
-    temperament: ExtractedObservation[Temperament]
-    brood_pattern: ExtractedObservation[BroodPattern]
-    brood_frames: ExtractedCount = Field(description="Frames carrying brood.")
-    stores_frames: ExtractedCount = Field(
-        description="Frames of honey or pollen stores."
+    observations: list[Observation] = Field(
+        description=(
+            "One entry per field the dictation addresses, and none for a field "
+            "it does not."
+        )
     )
-    bee_frames: ExtractedCount = Field(description="Frames covered with bees.")
     treatments: list[ExtractedTreatment]
     actions_to_do: list[ExtractedAction]
     detected_language: Language | None = Field(

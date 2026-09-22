@@ -34,7 +34,10 @@ from melliscribe.models.inspection import FieldStatus
 from melliscribe.models.inspection import InspectionRecord
 from melliscribe.models.provenance import Provenance
 from melliscribe.models.vocabulary import VOCABULARY_VERSION
+from melliscribe.pipeline.extraction.observations import read_observations
 from melliscribe.pipeline.extraction.schema import EXTRACTION_SCHEMA_VERSION
+from melliscribe.pipeline.extraction.schema import ExtractedCount
+from melliscribe.pipeline.extraction.schema import ExtractedObservation
 from melliscribe.pipeline.extraction.thresholds import UNCERTAINTY_THRESHOLD
 
 if TYPE_CHECKING:
@@ -126,10 +129,15 @@ def assemble_record(
             extracted_at=context.now,
         ),
     }
+    fields = read_observations(output)
     for name in OBSERVATION_FIELD_NAMES:
-        document[name] = assign_status(getattr(output, name), transcript).model_dump()
+        view = fields[name]
+        assert isinstance(view, ExtractedObservation)  # noqa: S101 - by construction
+        document[name] = assign_status(view, transcript).model_dump()
     for name in COUNT_FIELD_NAMES:
-        document[name] = assign_count(getattr(output, name), transcript).model_dump()
+        view = fields[name]
+        assert isinstance(view, ExtractedCount)  # noqa: S101 - by construction
+        document[name] = assign_count(view, transcript).model_dump()
     if context.previous is not None:
         _preserve_confirmed(document, context.previous)
     flag_contradictions(document)
