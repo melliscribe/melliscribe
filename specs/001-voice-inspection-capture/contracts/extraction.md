@@ -60,6 +60,16 @@ in the spec, and the spec gets amended rather than the rule quietly added.
    field rather than picking a side.
 8. **One hive per record** (FR-015, FR-015e). A transcript covering several
    hives flags the hive field rather than splitting or picking one.
+9. **Brood stages and brood pattern are separate fields** (FR-006m). "All
+   stages but patchy" sets both; neither is lost to the other.
+10. **Frame counts are taken only as said** (FR-006j). Brood, stores and
+    bee-covered frame counts are never worked out from a state field, another
+    count or a previous inspection.
+11. **Counts are reported as spoken** (FR-006j, FR-006k). Faces are reported
+    as faces and converted to frames in domain code; a range or hedge is marked
+    approximate. Approximate, negative, non-half-step and over-40 counts are
+    flagged with no suggested number, and a count contradicting its state field
+    flags both (FR-006l) — all applied after extraction, not by the prompt.
 
 ## Request shape
 

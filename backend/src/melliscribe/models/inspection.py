@@ -11,6 +11,7 @@ from __future__ import annotations
 from datetime import date
 from datetime import datetime
 from enum import StrEnum
+from typing import Annotated
 from typing import Self
 from uuid import UUID
 
@@ -20,6 +21,7 @@ from pydantic import model_validator
 from melliscribe.models.base import Model
 from melliscribe.models.language import Language
 from melliscribe.models.provenance import Provenance
+from melliscribe.models.vocabulary import BroodPattern
 from melliscribe.models.vocabulary import BroodState
 from melliscribe.models.vocabulary import QueenSeen
 from melliscribe.models.vocabulary import StoresState
@@ -54,6 +56,16 @@ class FlagReason(StrEnum):
     OTHER_LANGUAGE = "other_language"
     UNKNOWN_TERM = "unknown_term"
     DATE_CONFLICT = "date_conflict"
+    APPROXIMATE_COUNT = "approximate_count"
+    """A frame count said as a range or a hedge; never rounded (FR-006k)."""
+    IMPLAUSIBLE_COUNT = "implausible_count"
+    """A frame count that is negative, over the limit, or not a half step."""
+    COUNT_CONTRADICTION = "count_contradiction"
+    """A frame count and its state field contradict each other (FR-006l)."""
+
+
+FrameCount = Annotated[float, Field(ge=0, multiple_of=0.5)]
+"""A number of frames, in steps of one half (FR-006j)."""
 
 
 class SegmentRef(Model):
@@ -178,6 +190,11 @@ class InspectionRecord(Model):
         brood: The brood nest state.
         stores: The stores state.
         temperament: The colony's temperament.
+        brood_pattern: How the brood is laid out, apart from its stages
+            (FR-006m).
+        brood_frames: Frames carrying brood (FR-006j).
+        stores_frames: Frames of honey and pollen stores.
+        bee_frames: Frames covered with bees.
         treatments: Treatments applied.
         actions_to_do: Things to come back and do.
         confirmed_at: When the beekeeper confirmed the whole record. None is a
@@ -198,6 +215,18 @@ class InspectionRecord(Model):
     brood: ObservationField[BroodState]
     stores: ObservationField[StoresState]
     temperament: ObservationField[Temperament]
+    brood_pattern: ObservationField[BroodPattern] = Field(
+        default_factory=ObservationField[BroodPattern].unknown
+    )
+    brood_frames: ObservationField[FrameCount] = Field(
+        default_factory=ObservationField[FrameCount].unknown
+    )
+    stores_frames: ObservationField[FrameCount] = Field(
+        default_factory=ObservationField[FrameCount].unknown
+    )
+    bee_frames: ObservationField[FrameCount] = Field(
+        default_factory=ObservationField[FrameCount].unknown
+    )
     treatments: list[Treatment] = Field(default_factory=list)
     actions_to_do: list[ActionToDo] = Field(default_factory=list)
     confirmed_at: datetime | None = None
@@ -209,5 +238,22 @@ class InspectionRecord(Model):
         return self.hive.value
 
 
-OBSERVATION_FIELD_NAMES = ("queen_seen", "brood", "stores", "temperament")
+OBSERVATION_FIELD_NAMES = (
+    "queen_seen",
+    "brood",
+    "brood_pattern",
+    "stores",
+    "temperament",
+)
 """The observation fields that carry a controlled vocabulary."""
+
+COUNT_FIELD_NAMES = ("brood_frames", "stores_frames", "bee_frames")
+"""The frame counts: numbers in half-frame steps, no vocabulary (FR-006j)."""
+
+SCALAR_FIELD_NAMES = (
+    "hive",
+    "inspection_date",
+    *OBSERVATION_FIELD_NAMES,
+    *COUNT_FIELD_NAMES,
+)
+"""Every single-valued field of a record, in display order."""

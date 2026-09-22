@@ -14,7 +14,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import Any
 
+from melliscribe.models.inspection import COUNT_FIELD_NAMES
 from melliscribe.models.inspection import OBSERVATION_FIELD_NAMES
+from melliscribe.models.inspection import SCALAR_FIELD_NAMES
 from melliscribe.models.inspection import FieldStatus
 from melliscribe.models.inspection import InspectionRecord
 from melliscribe.models.inspection import ObservationField
@@ -63,7 +65,7 @@ def apply_patch(record: InspectionRecord, patch: RecordPatch) -> InspectionRecor
     """
     document = record.model_dump()
     present = patch.model_fields_set - {"version"}
-    for name in ("inspection_date", *OBSERVATION_FIELD_NAMES):
+    for name in ("inspection_date", *OBSERVATION_FIELD_NAMES, *COUNT_FIELD_NAMES):
         if name in present:
             document[name] = confirm_field(getattr(record, name), getattr(patch, name))
     if "treatments" in present:
@@ -106,8 +108,9 @@ def list_fields(record: InspectionRecord) -> list[ObservationField[Any]]:
     Returns:
         The fields.
     """
-    fields: list[ObservationField[Any]] = [record.hive, record.inspection_date]
-    fields += [getattr(record, name) for name in OBSERVATION_FIELD_NAMES]
+    fields: list[ObservationField[Any]] = [
+        getattr(record, name) for name in SCALAR_FIELD_NAMES
+    ]
     for treatment in record.treatments:
         fields += [treatment.product, treatment.dose]
     fields += [action.text for action in record.actions_to_do]
@@ -155,7 +158,7 @@ def confirm_record(
             return data | {"status": FieldStatus.CONFIRMED, "confidence": None}
         return data
 
-    for name in ("hive", "inspection_date", *OBSERVATION_FIELD_NAMES):
+    for name in SCALAR_FIELD_NAMES:
         document[name] = confirm(document[name])
     for treatment in document["treatments"]:
         treatment["product"] = confirm(treatment["product"])

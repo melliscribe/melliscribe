@@ -27,12 +27,13 @@ from pydantic import Field
 
 from melliscribe.models.base import Model
 from melliscribe.models.language import Language
+from melliscribe.models.vocabulary import BroodPattern
 from melliscribe.models.vocabulary import BroodState
 from melliscribe.models.vocabulary import QueenSeen
 from melliscribe.models.vocabulary import StoresState
 from melliscribe.models.vocabulary import Temperament
 
-EXTRACTION_SCHEMA_VERSION = "1"
+EXTRACTION_SCHEMA_VERSION = "2"
 """Bumped on any change to this module; recorded in every record's provenance."""
 
 
@@ -83,6 +84,36 @@ class ExtractedObservation[T](Model):
     issue: ExtractionIssue | None = Field(
         description="Why the field cannot be asserted confidently, if it cannot."
     )
+
+
+class CountUnit(StrEnum):
+    """What a spoken frame count counted."""
+
+    FRAMES = "frames"
+    FACES = "faces"
+    """Frame sides; two faces make one frame."""
+
+
+class ExtractedCount(Model):
+    """A number of frames, exactly as the speaker gave it (FR-006j)."""
+
+    mentioned: bool = Field(description="False when no such count was said.")
+    value: float | None = Field(
+        description=(
+            "The number said, in the unit said — faces are not converted here. "
+            "For a range or hedge, the number said or the midpoint of the range."
+        )
+    )
+    approximate: bool = Field(
+        description=(
+            "True when the count was given as a range ('four or five') or "
+            "hedged ('about five', 'environ cinq')."
+        )
+    )
+    unit: CountUnit | None = Field(description="Frames or frame faces, as said.")
+    confidence: float = Field(description="From 0 to 1: how clearly it was heard.")
+    phrases: list[Phrase]
+    issue: ExtractionIssue | None
 
 
 class ExtractedText(Model):
@@ -155,6 +186,12 @@ class ExtractionOutput(Model):
     brood: ExtractedObservation[BroodState]
     stores: ExtractedObservation[StoresState]
     temperament: ExtractedObservation[Temperament]
+    brood_pattern: ExtractedObservation[BroodPattern]
+    brood_frames: ExtractedCount = Field(description="Frames carrying brood.")
+    stores_frames: ExtractedCount = Field(
+        description="Frames of honey or pollen stores."
+    )
+    bee_frames: ExtractedCount = Field(description="Frames covered with bees.")
     treatments: list[ExtractedTreatment]
     actions_to_do: list[ExtractedAction]
     detected_language: Language | None = Field(

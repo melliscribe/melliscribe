@@ -18,9 +18,11 @@ from pydantic import model_validator
 
 from melliscribe.models.base import Model
 from melliscribe.models.hive import HiveIdentifier
+from melliscribe.models.inspection import FrameCount
 from melliscribe.models.inspection import InspectionRecord
 from melliscribe.models.language import Language
 from melliscribe.models.transcript import Transcript  # noqa: TC001
+from melliscribe.models.vocabulary import BroodPattern
 from melliscribe.models.vocabulary import BroodState
 from melliscribe.models.vocabulary import QueenSeen
 from melliscribe.models.vocabulary import StoresState
@@ -62,6 +64,10 @@ class RecordPatch(Model):
     brood: BroodState | None = None
     stores: StoresState | None = None
     temperament: Temperament | None = None
+    brood_pattern: BroodPattern | None = None
+    brood_frames: FrameCount | None = None
+    stores_frames: FrameCount | None = None
+    bee_frames: FrameCount | None = None
     treatments: list[TreatmentInput] | None = None
     actions_to_do: list[str] | None = None
 

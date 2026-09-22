@@ -49,7 +49,8 @@ def _cases():
     return [
         c
         for c in load_manifest(SMOKE)
-        if isinstance(c, ExtractionCase) and not c.id.startswith("smoke-full")
+        if isinstance(c, ExtractionCase)
+        and c.id.startswith(("smoke-sparse", "smoke-none"))
     ]
 
 

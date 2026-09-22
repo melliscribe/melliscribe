@@ -28,6 +28,7 @@ from melliscribe.evals.scoring import find_glossary_hits
 from melliscribe.evals.scoring import score_case
 from melliscribe.evals.scoring import summarise_extraction
 from melliscribe.models.hive import Hive
+from melliscribe.models.inspection import COUNT_FIELD_NAMES
 from melliscribe.models.inspection import OBSERVATION_FIELD_NAMES
 from melliscribe.models.inspection import ObservationField
 from melliscribe.models.transcript import Transcript
@@ -98,7 +99,7 @@ def _collect_fields(
             record.inspection_date.model_dump(mode="json")
         ),
     }
-    for name in OBSERVATION_FIELD_NAMES:
+    for name in (*OBSERVATION_FIELD_NAMES, *COUNT_FIELD_NAMES):
         fields[name] = getattr(record, name)
     return fields
 

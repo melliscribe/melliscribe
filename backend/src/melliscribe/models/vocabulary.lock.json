@@ -8,8 +8,11 @@
     "all_stages": "Eggs, larvae and capped brood are all present.",
     "no_eggs": "Larvae or capped brood present, but no eggs seen.",
     "no_brood": "No brood of any stage.",
-    "patchy": "Brood present in a spotty or irregular pattern.",
     "drone_brood_only": "Only drone brood, including drone brood in worker cells."
+  },
+  "brood_pattern": {
+    "solid": "Brood in a compact, continuous pattern with few empty cells.",
+    "patchy": "Brood in a spotty or irregular pattern with many empty cells."
   },
   "stores": {
     "plentiful": "More stores than the colony needs; room to harvest.",

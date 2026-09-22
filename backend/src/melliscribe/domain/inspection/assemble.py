@@ -21,11 +21,15 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import Any
 
+from melliscribe.domain.inspection.counts import assign_count
+from melliscribe.domain.inspection.counts import flag_contradictions
 from melliscribe.domain.inspection.dates import resolve_inspection_date
 from melliscribe.domain.inspection.hive_match import resolve_hive
 from melliscribe.domain.inspection.status import assign_status
 from melliscribe.domain.inspection.status import normalise_text
+from melliscribe.models.inspection import COUNT_FIELD_NAMES
 from melliscribe.models.inspection import OBSERVATION_FIELD_NAMES
+from melliscribe.models.inspection import SCALAR_FIELD_NAMES
 from melliscribe.models.inspection import FieldStatus
 from melliscribe.models.inspection import InspectionRecord
 from melliscribe.models.provenance import Provenance
@@ -124,8 +128,11 @@ def assemble_record(
     }
     for name in OBSERVATION_FIELD_NAMES:
         document[name] = assign_status(getattr(output, name), transcript).model_dump()
+    for name in COUNT_FIELD_NAMES:
+        document[name] = assign_count(getattr(output, name), transcript).model_dump()
     if context.previous is not None:
         _preserve_confirmed(document, context.previous)
+    flag_contradictions(document)
     return InspectionRecord.model_validate(document)
 
 
@@ -136,7 +143,7 @@ def _preserve_confirmed(document: dict[str, Any], previous: InspectionRecord) ->
         document: The freshly assembled record, as a dict; updated in place.
         previous: The record being re-processed.
     """
-    for name in ("hive", "inspection_date", *OBSERVATION_FIELD_NAMES):
+    for name in SCALAR_FIELD_NAMES:
         field_value = getattr(previous, name)
         if field_value.status is FieldStatus.CONFIRMED:
             document[name] = field_value.model_dump()

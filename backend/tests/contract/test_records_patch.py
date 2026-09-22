@@ -98,3 +98,42 @@ def test_treatments_and_actions_are_replaced_and_confirmed(api):
     ).json()
     assert response["treatments"][0]["product"]["status"] == "confirmed"
     assert response["actions_to_do"][0]["text"]["value"] == "poser une hausse"
+
+
+def test_brood_pattern_and_counts_can_be_confirmed(api):
+    record = _record(api)
+    response = api.client.patch(
+        f"/records/{record['id']}",
+        json={
+            "version": record["version"],
+            "brood_pattern": "patchy",
+            "brood_frames": 5.5,
+            "stores_frames": 2,
+            "bee_frames": None,
+        },
+    ).json()
+    assert response["brood_pattern"]["value"] == "patchy"
+    assert response["brood_frames"] == response["brood_frames"] | {
+        "status": "confirmed",
+        "value": 5.5,
+    }
+    assert response["stores_frames"]["value"] == 2
+    assert response["bee_frames"]["status"] == "confirmed"
+
+
+def test_a_count_that_is_not_a_half_step_is_rejected(api):
+    record = _record(api)
+    response = api.client.patch(
+        f"/records/{record['id']}",
+        json={"version": record["version"], "brood_frames": 3.3},
+    )
+    assert response.status_code == 422
+
+
+def test_a_negative_count_is_rejected(api):
+    record = _record(api)
+    response = api.client.patch(
+        f"/records/{record['id']}",
+        json={"version": record["version"], "bee_frames": -1},
+    )
+    assert response.status_code == 422

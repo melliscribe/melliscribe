@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from melliscribe.models.transcript import Transcript
     from melliscribe.pipeline.extraction.schema import Phrase
 
-_ISSUE_REASONS = {
+ISSUE_REASONS = {
     ExtractionIssue.UNMAPPABLE: FlagReason.UNMAPPABLE,
     ExtractionIssue.UNCLEAR_CORRECTION: FlagReason.UNCLEAR_CORRECTION,
     ExtractionIssue.OTHER_LANGUAGE: FlagReason.OTHER_LANGUAGE,
@@ -120,7 +120,7 @@ def assign_status(observation: Heard, transcript: Transcript) -> ObservationFiel
     confidence = observation.confidence
     reason: FlagReason | None = None
     if observation.issue is not None:
-        reason = _ISSUE_REASONS[observation.issue]
+        reason = ISSUE_REASONS[observation.issue]
     elif value is None:
         reason = FlagReason.UNMAPPABLE
     elif confidence < UNCERTAINTY_THRESHOLD or not quoted:

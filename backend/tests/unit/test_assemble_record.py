@@ -16,11 +16,14 @@ from melliscribe.models.inspection import FieldStatus
 from melliscribe.models.inspection import FlagReason
 from melliscribe.models.inspection import ObservationField
 from melliscribe.models.language import Language
+from melliscribe.models.vocabulary import BroodPattern
+from melliscribe.models.vocabulary import BroodState
 from melliscribe.models.vocabulary import StoresState
 from melliscribe.models.vocabulary import Temperament
 from melliscribe.pipeline.extraction.base import ExtractionResult
 from tests.support.builders import build_output
 from tests.support.builders import build_transcript
+from tests.support.builders import counted
 from tests.support.builders import heard
 from tests.support.builders import heard_text
 from tests.support.builders import mention_hive
@@ -192,3 +195,121 @@ def test_an_unclear_hive_is_flagged_for_several_hives():
     record = assemble_record(result, TRANSCRIPT, _context())
     assert record.hive.flag_reason is FlagReason.MULTIPLE_HIVES
     assert record.hive_id is None
+
+
+BROOD_TRANSCRIPT = build_transcript(
+    "Ruche trois.",
+    "Pas de couvain du tout.",
+    "Du couvain sur trois cadres.",
+    "Des œufs, des larves et de l'operculé, mais très en mosaïque.",
+    "Cinq cadres de couvain, deux de miel, huit cadres de population.",
+    "Pas de réserves.",
+)
+
+
+def _assemble_brood(**fields):
+    return assemble_record(
+        ExtractionResult(
+            output=build_output(**fields), model="claude-opus-5", prompt_version="2"
+        ),
+        BROOD_TRANSCRIPT,
+        _context(),
+    )
+
+
+def test_a_brood_count_above_zero_with_no_brood_flags_both():
+    """FR-006l, US1/AC21: neither value is chosen over the other."""
+    record = _assemble_brood(
+        brood=heard("no_brood", "Pas de couvain du tout", 1),
+        brood_frames=counted(3, "Du couvain sur trois cadres", 2),
+    )
+    for field in (record.brood, record.brood_frames):
+        assert field.status is FieldStatus.UNCERTAIN
+        assert field.flag_reason is FlagReason.COUNT_CONTRADICTION
+        assert field.value is None
+        assert field.proposal is None
+    assert record.brood.verbatim == ["Pas de couvain du tout"]
+
+
+def test_zero_brood_frames_with_brood_present_flags_both():
+    record = _assemble_brood(
+        brood=heard("all_stages", "Des œufs, des larves et de l'operculé", 3),
+        brood_frames=counted(0, "Du couvain sur trois cadres", 2),
+    )
+    assert record.brood.flag_reason is FlagReason.COUNT_CONTRADICTION
+    assert record.brood_frames.flag_reason is FlagReason.COUNT_CONTRADICTION
+
+
+def test_stores_frames_with_stores_stated_as_none_flags_both():
+    record = _assemble_brood(
+        stores=heard("none", "Pas de réserves", 5),
+        stores_frames=counted(2, "deux de miel", 4),
+    )
+    assert record.stores.flag_reason is FlagReason.COUNT_CONTRADICTION
+    assert record.stores_frames.flag_reason is FlagReason.COUNT_CONTRADICTION
+
+
+def test_consistent_counts_and_states_stand():
+    record = _assemble_brood(
+        brood=heard("all_stages", "Des œufs, des larves et de l'operculé", 3),
+        brood_frames=counted(5, "Cinq cadres de couvain", 4),
+    )
+    assert record.brood.status is FieldStatus.SYSTEM_DERIVED
+    assert record.brood_frames.value == 5
+
+
+def test_a_confirmed_field_is_never_flagged_by_a_contradiction():
+    first = _assemble_brood(brood=heard("no_brood", "Pas de couvain du tout", 1))
+    confirmed = first.model_copy(
+        update={
+            "brood": ObservationField[BroodState](
+                status=FieldStatus.CONFIRMED, value=BroodState.NO_BROOD
+            )
+        }
+    )
+    second = assemble_record(
+        ExtractionResult(
+            output=build_output(
+                brood_frames=counted(3, "Du couvain sur trois cadres", 2)
+            ),
+            model="claude-opus-5",
+            prompt_version="2",
+        ),
+        BROOD_TRANSCRIPT,
+        _context(previous=confirmed),
+    )
+    assert second.brood.status is FieldStatus.CONFIRMED
+    assert second.brood_frames.flag_reason is FlagReason.COUNT_CONTRADICTION
+
+
+def test_stages_and_pattern_are_kept_apart():
+    """FR-006m, US1/AC23."""
+    phrase = "Des œufs, des larves et de l'operculé, mais très en mosaïque"
+    record = _assemble_brood(
+        brood=heard("all_stages", phrase, 3),
+        brood_pattern=heard("patchy", phrase, 3),
+    )
+    assert record.brood.value is BroodState.ALL_STAGES
+    assert record.brood_pattern.value is BroodPattern.PATCHY
+
+
+def test_three_counts_in_one_breath_land_in_their_own_fields():
+    """US1/AC22."""
+    record = _assemble_brood(
+        brood_frames=counted(5, "Cinq cadres de couvain", 4),
+        stores_frames=counted(2, "deux de miel", 4),
+    )
+    assert record.brood_frames.value == 5
+    assert record.stores_frames.value == 2
+    assert record.stores_frames.verbatim == ["deux de miel"]
+    assert record.bee_frames.status is FieldStatus.UNKNOWN
+
+
+def test_a_record_saved_before_the_counts_existed_still_loads():
+    document = assemble_record(_full_output(), TRANSCRIPT, _context()).model_dump()
+    for name in ("brood_pattern", "brood_frames", "stores_frames", "bee_frames"):
+        del document[name]
+    record = type(
+        assemble_record(_full_output(), TRANSCRIPT, _context())
+    ).model_validate(document)
+    assert record.bee_frames.status is FieldStatus.UNKNOWN

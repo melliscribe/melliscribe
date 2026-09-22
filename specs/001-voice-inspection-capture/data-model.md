@@ -289,9 +289,20 @@ models in `backend/src/melliscribe/models/` are authoritative.
 - **Storage**: observation fields, treatments and actions are stored as the
   record's validated JSON document, with hive, date and confirmation
   denormalised for filtering — not as separate tables.
-- **Controlled vocabularies** as shipped (version 1):
+- **Brood pattern and frame counts** (FR-006j–m, clarified 2026-09-22):
+  `InspectionRecord` gains `brood_pattern` (`ObservationField[BroodPattern]`)
+  and three counts, `brood_frames`, `stores_frames` and `bee_frames`
+  (`ObservationField[FrameCount]`, a non-negative number in half-frame steps).
+  All four default to `UNKNOWN`, so records written before them still load.
+  Faces are converted to frames in `domain/inspection/counts.py`; approximate,
+  implausible (negative, over 40, not a half step) and contradictory counts are
+  `UNCERTAIN` with the new flag reasons `approximate_count`,
+  `implausible_count` and `count_contradiction`, and carry no proposal.
+  Extraction schema version 2; prompt version 2.
+- **Controlled vocabularies** as shipped (version 2):
   `queen_seen` = seen | not_seen | not_looked_for;
-  `brood` = all_stages | no_eggs | no_brood | patchy | drone_brood_only;
+  `brood` = all_stages | no_eggs | no_brood | drone_brood_only;
+  `brood_pattern` = solid | patchy;
   `stores` = plentiful | adequate | low | none;
   `temperament` = calm | nervous | defensive | aggressive.
   Definitions and membership criteria live in `models/vocabulary.py`; released

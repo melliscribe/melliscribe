@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import Any
 
+from melliscribe.models.inspection import COUNT_FIELD_NAMES
 from melliscribe.models.inspection import OBSERVATION_FIELD_NAMES
 
 if TYPE_CHECKING:
@@ -53,7 +54,10 @@ def format_record(record: InspectionRecord) -> str:
         format_field("hive", record.hive),
         format_field("inspection_date", record.inspection_date),
     ]
-    lines.extend(format_field(n, getattr(record, n)) for n in OBSERVATION_FIELD_NAMES)
+    lines.extend(
+        format_field(n, getattr(record, n))
+        for n in (*OBSERVATION_FIELD_NAMES, *COUNT_FIELD_NAMES)
+    )
     for i, treatment in enumerate(record.treatments):
         lines.append(format_field(f"treatment[{i}].product", treatment.product))
         lines.append(format_field(f"treatment[{i}].dose", treatment.dose))

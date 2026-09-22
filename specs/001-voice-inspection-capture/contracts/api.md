@@ -64,7 +64,9 @@ the review UI needs no second call to show provenance.
 ### `PATCH /records/{id}`
 
 Correct or confirm fields. Any field set here becomes `CONFIRMED` and is
-permanently immune to later extraction (FR-010).
+permanently immune to later extraction (FR-010). This includes `brood_pattern`
+and the frame counts `brood_frames`, `stores_frames` and `bee_frames`, which
+must be non-negative multiples of one half (422 otherwise).
 
 - `409` — the record was re-processed concurrently; the client refetches.
 

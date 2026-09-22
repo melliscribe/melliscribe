@@ -13,6 +13,10 @@ function countOpenFlags(record: RecordView): number {
     record.brood,
     record.stores,
     record.temperament,
+    record.brood_pattern,
+    record.brood_frames,
+    record.stores_frames,
+    record.bee_frames,
     ...(record.treatments ?? []).flatMap((t) => [t.product, t.dose]),
     ...(record.actions_to_do ?? []).map((a) => a.text),
   ];

@@ -10,7 +10,7 @@ from melliscribe.domain.vocabulary.glossary import render_glossary
 from melliscribe.models.vocabulary import VOCABULARIES
 
 PROMPTS_DIR = Path(__file__).parent
-CURRENT_PROMPT_VERSION = "1"
+CURRENT_PROMPT_VERSION = "2"
 
 
 def list_prompt_versions() -> list[str]:

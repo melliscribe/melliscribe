@@ -9,13 +9,14 @@ import { useCallback, useEffect, useState } from "react";
 
 import { api, ApiError, type RecordPatch, type RecordView, type Recording } from "../api/client";
 import { useI18n } from "../i18n";
+import { CountPicker } from "./CountPicker";
 import { FieldEditor } from "./FieldEditor";
 import { FieldRow } from "./FieldRow";
 import { HiveResolver } from "./HiveResolver";
-import { VOCABULARY_FIELDS, type VocabularyField } from "./vocabulary";
+import { COUNT_FIELDS, VOCABULARY_FIELDS, type VocabularyField } from "./vocabulary";
 
 export function RecordReview({ recordId, onBack }: { recordId: string; onBack: () => void }) {
-  const { t, formatDate, language } = useI18n();
+  const { t, formatDate, formatNumber, language } = useI18n();
   const [record, setRecord] = useState<RecordView | null>(null);
   const [recording, setRecording] = useState<Recording | null>(null);
   const [hiveNames, setHiveNames] = useState<Record<string, string>>({});
@@ -158,6 +159,35 @@ export function RecordReview({ recordId, onBack }: { recordId: string; onBack: (
         );
       })}
 
+      {COUNT_FIELDS.map((name) => {
+        const field = record[name];
+        return (
+          <FieldRow
+            key={name}
+            label={t(`field.${name}`)}
+            field={field}
+            renderValue={(value) => t("ui.review.frames", { count: formatNumber(Number(value)) })}
+            recordingId={record.recording_id}
+            audioAvailable={record.audio_available}
+          >
+            {editing === name ? (
+              <CountPicker
+                initial={field.status === "uncertain" ? null : (field.value ?? null)}
+                onChoose={(value) => void patch({ [name]: value })}
+                onCancel={() => setEditing(null)}
+              />
+            ) : (
+              <FieldActions
+                status={field.status}
+                canAccept={field.value != null || field.proposal != null}
+                onAccept={() => void patch({ [name]: field.value ?? field.proposal ?? null })}
+                onEdit={() => setEditing(name)}
+              />
+            )}
+          </FieldRow>
+        );
+      })}
+
       <TreatmentsAndActions record={record} onSave={(changes) => void patch(changes)} />
 
       <button
@@ -217,17 +247,19 @@ export function RecordReview({ recordId, onBack }: { recordId: string; onBack: (
 
 function FieldActions({
   status,
+  canAccept = true,
   onAccept,
   onEdit,
 }: {
   status: string;
+  canAccept?: boolean;
   onAccept: () => void;
   onEdit: () => void;
 }) {
   const { t } = useI18n();
   return (
     <div className="row">
-      {status !== "confirmed" && (
+      {status !== "confirmed" && canAccept && (
         <button type="button" onClick={onAccept}>
           {t("ui.review.accept")}
         </button>

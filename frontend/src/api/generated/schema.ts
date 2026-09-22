@@ -509,11 +509,17 @@ export interface components {
             language: components["schemas"]["Language"];
         };
         /**
-         * BroodState
-         * @description What the brood nest showed.
+         * BroodPattern
+         * @description How the brood is laid out on the frames.
          * @enum {string}
          */
-        BroodState: "all_stages" | "no_eggs" | "no_brood" | "patchy" | "drone_brood_only";
+        BroodPattern: "solid" | "patchy";
+        /**
+         * BroodState
+         * @description Which brood stages the nest showed.
+         * @enum {string}
+         */
+        BroodState: "all_stages" | "no_eggs" | "no_brood" | "drone_brood_only";
         /**
          * ErrorResponse
          * @description The error body every endpoint returns.
@@ -527,7 +533,7 @@ export interface components {
             /** Code */
             code: string;
             /** Details */
-            details?: {
+            details: {
                 [key: string]: unknown;
             }[] | null;
             /** Message */
@@ -579,7 +585,7 @@ export interface components {
          *     `flag_reason.<value>`.
          * @enum {string}
          */
-        FlagReason: "low_confidence" | "unmappable" | "unclear_correction" | "multiple_hives" | "no_matching_hive" | "other_language" | "unknown_term" | "date_conflict";
+        FlagReason: "low_confidence" | "unmappable" | "unclear_correction" | "multiple_hives" | "no_matching_hive" | "other_language" | "unknown_term" | "date_conflict" | "approximate_count" | "implausible_count" | "count_contradiction";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -622,102 +628,130 @@ export interface components {
          * @enum {string}
          */
         Language: "fr" | "en";
+        /** ObservationField[Annotated[float, FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=0), MultipleOf(multiple_of=0.5)])]] */
+        ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____: {
+            /** Confidence */
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
+            /** Proposal */
+            proposal: number | null;
+            /** Segment Refs */
+            segment_refs: components["schemas"]["SegmentRef"][];
+            status: components["schemas"]["FieldStatus"];
+            /** Value */
+            value: number | null;
+            /** Verbatim */
+            verbatim: string[];
+        };
+        /** ObservationField[BroodPattern] */
+        ObservationField_BroodPattern_: {
+            /** Confidence */
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
+            proposal: components["schemas"]["BroodPattern"] | null;
+            /** Segment Refs */
+            segment_refs: components["schemas"]["SegmentRef"][];
+            status: components["schemas"]["FieldStatus"];
+            value: components["schemas"]["BroodPattern"] | null;
+            /** Verbatim */
+            verbatim: string[];
+        };
         /** ObservationField[BroodState] */
         ObservationField_BroodState_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
-            proposal?: components["schemas"]["BroodState"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
+            proposal: components["schemas"]["BroodState"] | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
-            value?: components["schemas"]["BroodState"] | null;
+            value: components["schemas"]["BroodState"] | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /** ObservationField[QueenSeen] */
         ObservationField_QueenSeen_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
-            proposal?: components["schemas"]["QueenSeen"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
+            proposal: components["schemas"]["QueenSeen"] | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
-            value?: components["schemas"]["QueenSeen"] | null;
+            value: components["schemas"]["QueenSeen"] | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /** ObservationField[StoresState] */
         ObservationField_StoresState_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
-            proposal?: components["schemas"]["StoresState"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
+            proposal: components["schemas"]["StoresState"] | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
-            value?: components["schemas"]["StoresState"] | null;
+            value: components["schemas"]["StoresState"] | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /** ObservationField[Temperament] */
         ObservationField_Temperament_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
-            proposal?: components["schemas"]["Temperament"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
+            proposal: components["schemas"]["Temperament"] | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
-            value?: components["schemas"]["Temperament"] | null;
+            value: components["schemas"]["Temperament"] | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /** ObservationField[UUID] */
         ObservationField_UUID_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
             /** Proposal */
-            proposal?: string | null;
+            proposal: string | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
             /** Value */
-            value?: string | null;
+            value: string | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /** ObservationField[date] */
         ObservationField_date_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
             /** Proposal */
-            proposal?: string | null;
+            proposal: string | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
             /** Value */
-            value?: string | null;
+            value: string | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /** ObservationField[str] */
         ObservationField_str_: {
             /** Confidence */
-            confidence?: number | null;
-            flag_reason?: components["schemas"]["FlagReason"] | null;
+            confidence: number | null;
+            flag_reason: components["schemas"]["FlagReason"] | null;
             /** Proposal */
-            proposal?: string | null;
+            proposal: string | null;
             /** Segment Refs */
-            segment_refs?: components["schemas"]["SegmentRef"][];
+            segment_refs: components["schemas"]["SegmentRef"][];
             status: components["schemas"]["FieldStatus"];
             /** Value */
-            value?: string | null;
+            value: string | null;
             /** Verbatim */
-            verbatim?: string[];
+            verbatim: string[];
         };
         /**
          * PipelineStage
@@ -777,11 +811,18 @@ export interface components {
         RecordPatch: {
             /** Actions To Do */
             actions_to_do?: string[] | null;
+            /** Bee Frames */
+            bee_frames?: number | null;
             brood?: components["schemas"]["BroodState"] | null;
+            /** Brood Frames */
+            brood_frames?: number | null;
+            brood_pattern?: components["schemas"]["BroodPattern"] | null;
             /** Inspection Date */
             inspection_date?: string | null;
             queen_seen?: components["schemas"]["QueenSeen"] | null;
             stores?: components["schemas"]["StoresState"] | null;
+            /** Stores Frames */
+            stores_frames?: number | null;
             temperament?: components["schemas"]["Temperament"] | null;
             /** Treatments */
             treatments?: components["schemas"]["TreatmentInput"][] | null;
@@ -799,18 +840,21 @@ export interface components {
          */
         RecordView: {
             /** Actions To Do */
-            actions_to_do?: components["schemas"]["ActionToDo"][];
+            actions_to_do: components["schemas"]["ActionToDo"][];
             /** Audio Available */
             audio_available: boolean;
+            bee_frames: components["schemas"]["ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____"];
             brood: components["schemas"]["ObservationField_BroodState_"];
+            brood_frames: components["schemas"]["ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____"];
+            brood_pattern: components["schemas"]["ObservationField_BroodPattern_"];
             /**
              * Captured On
              * Format: date
              */
             captured_on: string;
             /** Confirmed At */
-            confirmed_at?: string | null;
-            detected_language?: components["schemas"]["Language"] | null;
+            confirmed_at: string | null;
+            detected_language: components["schemas"]["Language"] | null;
             hive: components["schemas"]["ObservationField_UUID_"];
             /**
              * Id
@@ -827,8 +871,9 @@ export interface components {
              */
             recording_id: string;
             /** Spoken Hive Identifier */
-            spoken_hive_identifier?: string | null;
+            spoken_hive_identifier: string | null;
             stores: components["schemas"]["ObservationField_StoresState_"];
+            stores_frames: components["schemas"]["ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____"];
             temperament: components["schemas"]["ObservationField_Temperament_"];
             transcript: components["schemas"]["Transcript"];
             /**
@@ -837,7 +882,7 @@ export interface components {
              */
             transcript_id: string;
             /** Treatments */
-            treatments?: components["schemas"]["Treatment"][];
+            treatments: components["schemas"]["Treatment"][];
             /** Version */
             version: number;
         };
@@ -884,10 +929,10 @@ export interface components {
             /** Duration Seconds */
             duration_seconds: number;
             /** Eval Consent At */
-            eval_consent_at?: string | null;
+            eval_consent_at: string | null;
             /** Failure Reason */
-            failure_reason?: string | null;
-            failure_stage?: components["schemas"]["PipelineStage"] | null;
+            failure_reason: string | null;
+            failure_stage: components["schemas"]["PipelineStage"] | null;
             /**
              * Id
              * Format: uuid
@@ -900,7 +945,7 @@ export interface components {
              */
             reprocess_failed: boolean;
             /** Retention Expires At */
-            retention_expires_at?: string | null;
+            retention_expires_at: string | null;
             state: components["schemas"]["RecordingState"];
         };
         /**
@@ -970,7 +1015,7 @@ export interface components {
              * Format: uuid
              */
             id: string;
-            language_detected?: components["schemas"]["Language"] | null;
+            language_detected: components["schemas"]["Language"] | null;
             /**
              * Recording Id
              * Format: uuid
@@ -985,7 +1030,7 @@ export interface components {
          */
         TranscriptSegment: {
             /** Confidence */
-            confidence?: number | null;
+            confidence: number | null;
             /** End Seconds */
             end_seconds: number;
             /** Start Seconds */
@@ -1004,7 +1049,7 @@ export interface components {
          */
         Treatment: {
             /** Applied On */
-            applied_on?: string | null;
+            applied_on: string | null;
             dose: components["schemas"]["ObservationField_str_"];
             product: components["schemas"]["ObservationField_str_"];
         };

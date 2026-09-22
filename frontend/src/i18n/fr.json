@@ -9,8 +9,11 @@
       "all_stages": "Œufs, larves et couvain operculé",
       "no_eggs": "Pas d'œufs",
       "no_brood": "Pas de couvain",
-      "patchy": "Couvain en mosaïque",
       "drone_brood_only": "Couvain mâle uniquement"
+    },
+    "brood_pattern": {
+      "solid": "Couvain compact",
+      "patchy": "Couvain en mosaïque"
     },
     "stores": {
       "plentiful": "Abondantes",
@@ -35,7 +38,11 @@
     "treatments": "Traitements",
     "treatment_product": "Produit",
     "treatment_dose": "Dose",
-    "actions_to_do": "À faire"
+    "actions_to_do": "À faire",
+    "brood_pattern": "Aspect du couvain",
+    "brood_frames": "Cadres de couvain",
+    "stores_frames": "Cadres de réserves",
+    "bee_frames": "Cadres de population"
   },
   "status": {
     "unknown": "Non mentionné",
@@ -51,7 +58,10 @@
     "no_matching_hive": "Aucune ruche ne porte encore ce nom",
     "other_language": "Dit dans l'autre langue",
     "unknown_term": "Contient un mot que l'application ne connaît pas",
-    "date_conflict": "La date dite est éloignée de la date de l'enregistrement"
+    "date_conflict": "La date dite est éloignée de la date de l'enregistrement",
+    "approximate_count": "Nombre donné de façon approximative",
+    "implausible_count": "Nombre de cadres peu plausible",
+    "count_contradiction": "Le nombre de cadres contredit ce qui a été dit par ailleurs"
   },
   "language": {
     "fr": "Français",
@@ -117,7 +127,10 @@
       "delete_audio": "Supprimer l'audio maintenant",
       "delete_audio_confirm": "Supprimer définitivement l'audio ? La fiche et la transcription sont conservées.",
       "eval_consent": "Autoriser l'utilisation de cet enregistrement pour améliorer Melliscribe",
-      "eval_consent_given": "Autorisé le {date}"
+      "eval_consent_given": "Autorisé le {date}",
+      "frames": "{count} cadres",
+      "count_less": "− ½ cadre",
+      "count_more": "+ ½ cadre"
     },
     "pending": {
       "empty": "Rien en attente.",

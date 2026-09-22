@@ -36,7 +36,7 @@ def test_redefining_a_released_value_is_refused(tmp_path):
 
 def test_adding_a_value_is_allowed(tmp_path):
     lock = build_lock()
-    del lock["brood"]["patchy"]
+    del lock["brood_pattern"]["patchy"]
     path = tmp_path / "lock.json"
     path.write_text(json.dumps(lock))
     assert check_released_values(path) == []

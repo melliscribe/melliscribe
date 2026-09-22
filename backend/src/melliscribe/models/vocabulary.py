@@ -6,13 +6,15 @@ Every value is a language-neutral identifier (FR-006c). Display labels live in
 the frontend i18n catalogues under `vocabulary.<field>.<value>`, and
 `melliscribe vocabulary check` fails the build when one is missing (FR-006i).
 
-**Fields with a controlled vocabulary**: `queen_seen`, `brood`, `stores`,
-`temperament`.
+**Fields with a controlled vocabulary**: `queen_seen`, `brood`,
+`brood_pattern`, `stores`, `temperament`.
 
 **Fields without one** (FR-006g requires listing them explicitly):
 `treatments` (product and dose are kept as spoken, FR-014c), `actions_to_do`
-(free text by design), `inspection_date` (a date) and `hive` (resolved against
-the beekeeper's own hive identifiers).
+(free text by design), `inspection_date` (a date), `hive` (resolved against
+the beekeeper's own hive identifiers), and the three frame counts
+`brood_frames`, `stores_frames` and `bee_frames` (numbers in half-frame steps,
+FR-006j).
 
 **Ordering**: every vocabulary is unordered (spec Assumptions). Nothing in this
 feature compares values or derives a trend from them.
@@ -24,6 +26,11 @@ compares the live definitions against `vocabulary.lock.json`, which records
 every released value with its definition. A value that is no longer
 appropriate is listed in its vocabulary's `superseded` mapping and stays in the
 enum so historical records keep meaning what they meant.
+
+**Regenerating the lock** is allowed only while no record has been released.
+Version 2 removed `patchy` from `brood` into its own `brood_pattern` field
+(FR-006m) that way, before the first release. From the first release on, a
+retired value is superseded, never removed, and the lock only grows.
 """
 
 from __future__ import annotations
@@ -34,7 +41,7 @@ from dataclasses import field
 from enum import StrEnum
 from pathlib import Path
 
-VOCABULARY_VERSION = "1"
+VOCABULARY_VERSION = "2"
 """Bumped on any change to a vocabulary; recorded in every record's provenance."""
 
 LOCK_FILE = Path(__file__).with_name("vocabulary.lock.json")
@@ -49,13 +56,19 @@ class QueenSeen(StrEnum):
 
 
 class BroodState(StrEnum):
-    """What the brood nest showed."""
+    """Which brood stages the nest showed."""
 
     ALL_STAGES = "all_stages"
     NO_EGGS = "no_eggs"
     NO_BROOD = "no_brood"
-    PATCHY = "patchy"
     DRONE_BROOD_ONLY = "drone_brood_only"
+
+
+class BroodPattern(StrEnum):
+    """How the brood is laid out on the frames."""
+
+    SOLID = "solid"
+    PATCHY = "patchy"
 
 
 class StoresState(StrEnum):
@@ -124,17 +137,29 @@ VOCABULARIES: dict[str, Vocabulary] = {
         field_name="brood",
         values=BroodState,
         membership=(
-            "The overall state of the brood nest as a single category. A value "
-            "belongs here only if a beekeeper would act differently on it."
+            "Which brood stages are present, not how they are laid out: the "
+            "pattern is its own field. A value belongs here only if a "
+            "beekeeper would act differently on it."
         ),
         definitions={
             "all_stages": "Eggs, larvae and capped brood are all present.",
             "no_eggs": "Larvae or capped brood present, but no eggs seen.",
             "no_brood": "No brood of any stage.",
-            "patchy": "Brood present in a spotty or irregular pattern.",
             "drone_brood_only": (
                 "Only drone brood, including drone brood in worker cells."
             ),
+        },
+    ),
+    "brood_pattern": Vocabulary(
+        field_name="brood_pattern",
+        values=BroodPattern,
+        membership=(
+            "How the brood is laid out on the frames, whatever its stages. "
+            "Said of the brood as a whole, not of a single frame."
+        ),
+        definitions={
+            "solid": "Brood in a compact, continuous pattern with few empty cells.",
+            "patchy": "Brood in a spotty or irregular pattern with many empty cells.",
         },
     ),
     "stores": Vocabulary(

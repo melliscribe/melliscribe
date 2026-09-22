@@ -18,6 +18,14 @@
 - Q: How long should original recordings be kept after the record made from them is confirmed? → A: C — 12 months by default, beekeeper-adjustable, with delete-now always available; transcript and record outlive the audio.
 - Q: Does the app already know the dictation language, or should it detect it from the recording? → A: B — a sticky account setting, applied to every recording, with a language override and re-processing available at review.
 
+### Session 2026-09-22
+
+- Q: Should the brood field be split so that which stages are present and what the brood pattern looks like are recorded separately? → A: B — the brood field keeps the stages (all stages, no eggs, no brood, drone brood only) and a separate brood pattern field records solid or patchy.
+- Q: What unit should the brood frame count use: whole frames, half frames, or frame faces? → A: B — frames in steps of one half; a spoken count of frame faces is converted to frames (two faces make one frame).
+- Q: Should frames of stores and frames covered with bees be counted now as well, alongside the brood frame count? → A: B — all three counts now (brood, stores, bees), with the same unit and rules.
+- Q: Above what number should a frame count be treated as a mishearing and flagged instead of stored as heard? → A: B — any count above 40 frames is flagged.
+- Q: When a count is approximate ("four or five frames"), should the flagged field offer a suggested number for the beekeeper to accept with one tap? → A: A — no suggestion; the field is flagged with the phrase shown and carries no proposal, and the beekeeper picks the number.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Dictate an inspection at the hive (Priority: P1)
@@ -114,6 +122,30 @@ other part of this feature built.
     content, **When** it is processed, **Then** no record is produced, the
     beekeeper is told no inspection was recognised, and the recording is
     retained.
+19. **Given** a dictation saying how many frames carry brood ("du couvain sur
+    cinq cadres", "brood on five frames"), **When** the record is produced,
+    **Then** the brood frame count holds that number with the phrase it came
+    from, and a French and an English dictation of the same count store the
+    same number.
+20. **Given** a dictation giving an approximate count ("four or five frames of
+    brood"), **When** the record is produced, **Then** the count is flagged as
+    uncertain with no suggested number, rather than silently rounded to either
+    figure.
+21. **Given** a dictation whose brood frame count contradicts its brood state
+    ("no brood at all", then "brood on three frames"), **When** the record is
+    produced, **Then** both fields are flagged and neither is chosen over the
+    other.
+22. **Given** a dictation giving all three counts in one breath ("cinq cadres
+    de couvain, deux de miel, huit cadres de population"), **When** the record
+    is produced, **Then** each count lands in its own field with its own
+    phrase, and a count not mentioned stays unknown.
+23. **Given** a dictation saying "eggs, larvae and capped brood, but very
+    patchy", **When** the record is produced, **Then** the brood field says
+    all stages and the brood pattern field says patchy — neither observation
+    is lost to the other.
+24. **Given** a dictation whose count is heard as more than 40 frames
+    ("cinquante cadres de couvain"), **When** the record is produced, **Then**
+    the count is flagged as uncertain rather than stored as heard.
 
 ---
 
@@ -265,6 +297,10 @@ effect.
 - Retention expiry falls due for a recording whose record still has
   unconfirmed or flagged fields.
 - Processing succeeds but produces a record where every single field is flagged.
+- The beekeeper gives an approximate or ranged frame count ("four or five
+  frames", "about half the box"), or a count of frame faces rather than frames.
+- The brood frame count contradicts the brood state, or exceeds what a hive
+  body can hold.
 
 ## Requirements *(mandatory)*
 
@@ -288,7 +324,7 @@ effect.
 
 - **FR-006**: The system MUST produce, from a dictation, a structured
   inspection record containing at minimum: hive identity, inspection date,
-  whether the queen was seen, brood state, stores state, colony temperament,
+  whether the queen was seen, brood state, brood pattern, stores state, colony temperament,
   treatments applied, and actions to do.
 - **FR-006a**: Each observation field MUST hold a coded value drawn from a
   controlled vocabulary defined for that field, so that records are comparable
@@ -327,6 +363,32 @@ effect.
 - **FR-006i**: Every controlled vocabulary value MUST have a display label in
   both supported languages. A value missing a label in either language MUST
   fail the build.
+- **FR-006j**: The record MUST capture three frame counts as count fields
+  rather than controlled-vocabulary fields: frames carrying brood, frames of
+  stores (honey and pollen), and frames covered with bees. Each count is taken
+  only from what was said — never inferred from the brood or stores state, from
+  another count, or from a previous inspection — and carries the phrase it came
+  from like any other field. Counts are in frames, in steps of one half
+  ("trois cadres et demi" is 3.5); a count spoken in frame faces is converted
+  to frames, two faces making one frame, and the phrase keeps the words
+  actually said. A count that is not a multiple of one half is flagged as
+  uncertain.
+- **FR-006k**: An approximate or ranged count ("four or five frames") MUST be
+  flagged as uncertain rather than rounded, and carries no proposal — any
+  suggested number would be a rounding; the phrase stays visible and the
+  beekeeper picks the number at review. A count above 40 frames MUST be flagged as uncertain rather than
+  stored as heard — hive equipment is out of scope, so this single limit covers
+  two brood boxes and several supers while still catching a misheard order of
+  magnitude. A negative count is never stored.
+- **FR-006l**: When a frame count contradicts its state field, both fields
+  MUST be flagged as uncertain and neither value is preferred: a brood frame
+  count above zero with no brood, or zero with brood present; a stores frame
+  count above zero with stores stated as none, or zero with stores present.
+- **FR-006m**: Brood stages and brood pattern MUST be recorded as two separate
+  observation fields, each with its own controlled vocabulary: the brood
+  field holds which stages are present (all stages, no eggs, no brood, drone
+  brood only) and the brood pattern field holds how the brood is laid out
+  (solid, patchy). Either may be known while the other is unknown.
 - **FR-007**: The system MUST mark as unknown any field the dictation did not
   cover, and MUST NOT populate it with an inferred, default, or carried-over
   value.
@@ -488,12 +550,13 @@ effect.
 - **Transcript**: The text of what was said in a Recording, retained in full
   and linked back to positions in the audio so any passage can be replayed.
 - **Inspection Record**: The structured outcome of one inspection of one hive.
-  Holds hive identity, inspection date, queen seen, brood state, stores state,
-  temperament, treatments applied, and actions to do. Linked to the Recording
+  Holds hive identity, inspection date, queen seen, brood state, brood
+  pattern, brood frame count, stores frame count, bee frame count, stores state, temperament, treatments applied, and actions to do. Linked to the Recording
   and Transcript it was derived from, and to the provenance of the
   interpretation that produced it.
 - **Observation Field**: One field of an Inspection Record. Carries a coded
-  value from its controlled vocabulary, the verbatim phrase that value was
+  value from its controlled vocabulary — or, for a count field such as the
+  brood frame count, a number — the verbatim phrase that value was
   derived from, a pointer into the audio for that phrase, and a status —
   unknown, uncertain, system-derived, or beekeeper-confirmed.
 - **Controlled Vocabulary**: The permitted values for one observation field,

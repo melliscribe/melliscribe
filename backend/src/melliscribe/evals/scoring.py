@@ -58,6 +58,8 @@ def _as_text(value: Any) -> str | None:  # noqa: ANN401 - any coded value
     """
     if value is None:
         return None
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
     return str(getattr(value, "value", value))
 
 

@@ -14,6 +14,10 @@ API is versioned independently.
   stores, temperament, treatments and actions to do. Anything you did not
   mention is marked "not mentioned"; anything unclear is marked "needs
   checking" — never guessed.
+- Records also hold the brood pattern (solid or patchy) and how many frames
+  carry brood, stores and bees, in half frames. A count given roughly ("four
+  or five frames") or one that contradicts the rest of the dictation is
+  marked "needs checking" instead of being rounded or guessed.
 - Every field shows the words it was heard as, and you can play back that
   passage of the recording.
 - Review at your own pace: correct any field with one tap, confirm the record

@@ -373,3 +373,30 @@ nothing visible, and for a solo maintainer with a few hours a week that is the
 most likely abandonment point. Step 2 above exists to counter it — reach a
 working end-to-end path early, on a six-recording eval set, and grow the
 dataset afterwards. **Do not build T093–T098 before T050–T081.**
+
+---
+
+## Phase 8: Convergence
+
+Appended by `/speckit-converge` after the 2026-09-22 clarification session
+(brood split, frame counts). No vocabulary value has been used by a released
+record, so removing `patchy` from the brood vocabulary is still allowed under
+FR-006h; bump `VOCABULARY_VERSION` and regenerate the lock rather than
+superseding. Tests first, per the constitution.
+
+- [X] T131 [US1] Write failing tests in `backend/tests/unit/test_frame_counts.py` for count-field status: half-frame steps kept, a non-half step flagged, a frame-face count converted to frames with the spoken phrase kept, a count above 40 flagged, an approximate or ranged count flagged with no proposal, a negative count never stored, an unmentioned count left unknown per FR-006j, FR-006k, US1/AC19, US1/AC20, US1/AC24 (missing)
+- [X] T132 [US1] Write failing tests in `backend/tests/unit/test_assemble_record.py` for count/state contradictions — brood count above zero with no brood, zero with brood present, and the same for stores — flagging both fields with neither preferred per FR-006l, US1/AC21 (missing)
+- [X] T133 [US1] Write failing tests for the brood split and the three counts: all stages plus patchy kept in separate fields, and three counts in one breath landing in their own fields with their own phrases per FR-006m, US1/AC22, US1/AC23 (missing)
+- [X] T134 [US1] Remove `patchy` from `BroodState` and add a `BroodPattern` vocabulary (solid, patchy) with definitions and membership criteria in `backend/src/melliscribe/models/vocabulary.py`; bump `VOCABULARY_VERSION` to 2 and regenerate `vocabulary.lock.json` per FR-006m, FR-006g (contradicts) — the lock was regenerated because no record has been released; from the first release on it only grows (documented in the module)
+- [X] T135 [US1] Add `brood_pattern`, `brood_frames`, `stores_frames` and `bee_frames` to `InspectionRecord` in `backend/src/melliscribe/models/inspection.py`, the counts as observation fields holding non-negative numbers in half-frame steps, all defaulting to unknown so existing documents still validate per FR-006j, FR-006m (missing)
+- [X] T136 [US1] Extend `ExtractionOutput` in `backend/src/melliscribe/pipeline/extraction/schema.py` with `brood_pattern` and an extracted-count shape (value, whether approximate, unit spoken — frames or faces, confidence, phrases, issue) for the three counts; bump `EXTRACTION_SCHEMA_VERSION` to 2 per FR-006j, FR-006k (missing)
+- [X] T137 [US1] Implement count status assignment in `backend/src/melliscribe/domain/inspection/counts.py` — face-to-frame conversion, half-step check, the 40-frame limit, approximate counts flagged with no proposal — adding the `approximate_count` and `implausible_count` flag reasons per FR-006j, FR-006k (missing)
+- [X] T138 [US1] Implement the count/state contradiction check in `backend/src/melliscribe/domain/inspection/assemble.py` with a `count_contradiction` flag reason, and include the new fields in confirmed-field preservation, `list_fields` and `count_open_flags` per FR-006l, FR-010, FR-026c (missing)
+- [X] T139 [US1] Write prompt `backend/src/melliscribe/pipeline/extraction/prompts/v2.md` covering brood pattern and the three counts (never inferred, faces reported as faces, approximate counts marked approximate) with French and English few-shot examples, keeping v1 for `--prompt-version` replay, and make v2 current per FR-006j, D6 (missing) — also updated `contracts/extraction.md` (rules 9–11) and `contracts/api.md` (PATCH), per analysis finding C1
+- [X] T140 [P] [US1] Add glossary terms to `backend/src/melliscribe/domain/vocabulary/glossary.py` — cadre de couvain / brood frame, cadre de miel / frame of stores, cadres de population / frames covered with bees, face de cadre / frame side — and bump `GLOSSARY_VERSION` per FR-014a (missing)
+- [X] T141 [P] [US1] Add French and English labels for the brood pattern values, the new flag reasons and the four new field names to `frontend/src/i18n/fr.json` and `en.json`, passing `melliscribe vocabulary check` per FR-006i, FR-025 (missing)
+- [X] T142 [US1] Accept `brood_pattern` and the three counts in `RecordPatch` (`backend/src/melliscribe/models/api.py`), validated to non-negative half-frame steps, with a contract test in `backend/tests/contract/test_records_patch.py` per FR-010, FR-022 (missing)
+- [X] T143 [US1] Regenerate `backend/openapi.json` and `frontend/src/api/generated/` so the drift gate passes per Constitution IV (missing)
+- [X] T144 [US1] Add the brood pattern editor and a gloved count picker (large buttons, half-frame steps from 0 to 40, "not observed") to the review screen in `frontend/src/review/`, showing a flagged count with its phrase and no suggested number per FR-004, FR-022, FR-006k (missing)
+- [ ] T145 [US1] Extend the eval harness to score numeric counts and `brood_pattern`, add paired French/English synthetic smoke cases with counts (exact, approximate, faces, contradictory) to `backend/evals/datasets/smoke.jsonl`, and run `melliscribe eval run` for the prompt v2 and schema v2 change, with the result in the pull request per Constitution II, SC-005, SC-011 (missing) — **Partly done**: numeric scoring and four new paired smoke cases (exact counts, approximate count, faces) are in; the eval run itself needs `ANTHROPIC_API_KEY`
+- [X] T146 [P] Document the brood pattern field and the three counts in `specs/001-voice-inspection-capture/data-model.md` under Implementation notes per plan: data model (partial)

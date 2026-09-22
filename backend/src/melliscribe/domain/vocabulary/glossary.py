@@ -20,7 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-GLOSSARY_VERSION = "1"
+GLOSSARY_VERSION = "2"
 
 
 class TermCategory(StrEnum):
@@ -91,6 +91,21 @@ GLOSSARY: tuple[GlossaryTerm, ...] = (
     GlossaryTerm("propolis", "propolis", TermCategory.COLONY),
     GlossaryTerm("colonie", "colony", TermCategory.COLONY),
     GlossaryTerm("essaim", "swarm", TermCategory.COLONY),
+    GlossaryTerm("couvain compact", "solid brood / compact brood", TermCategory.COLONY),
+    GlossaryTerm(
+        "cadre de couvain", "brood frame / frame of brood", TermCategory.COLONY
+    ),
+    GlossaryTerm(
+        "cadre de miel / cadre de réserves",
+        "frame of stores / frame of honey",
+        TermCategory.COLONY,
+    ),
+    GlossaryTerm(
+        "cadres de population / cadres couverts d'abeilles",
+        "frames covered with bees / frames of bees",
+        TermCategory.COLONY,
+    ),
+    GlossaryTerm("face de cadre", "frame side / frame face", TermCategory.EQUIPMENT),
     # Conditions
     GlossaryTerm("essaimage", "swarming", TermCategory.CONDITION),
     GlossaryTerm("orpheline", "queenless", TermCategory.CONDITION),

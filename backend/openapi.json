@@ -17,6 +17,10 @@
             "default": "fr"
           }
         },
+        "required": [
+          "language",
+          "audio_retention_days"
+        ],
         "title": "AccountSettings",
         "type": "object"
       },
@@ -106,13 +110,21 @@
         "title": "Body_upload_recording_recordings_post",
         "type": "object"
       },
+      "BroodPattern": {
+        "description": "How the brood is laid out on the frames.",
+        "enum": [
+          "solid",
+          "patchy"
+        ],
+        "title": "BroodPattern",
+        "type": "string"
+      },
       "BroodState": {
-        "description": "What the brood nest showed.",
+        "description": "Which brood stages the nest showed.",
         "enum": [
           "all_stages",
           "no_eggs",
           "no_brood",
-          "patchy",
           "drone_brood_only"
         ],
         "title": "BroodState",
@@ -148,7 +160,8 @@
         },
         "required": [
           "code",
-          "message"
+          "message",
+          "details"
         ],
         "title": "ErrorResponse",
         "type": "object"
@@ -216,7 +229,10 @@
           "no_matching_hive",
           "other_language",
           "unknown_term",
-          "date_conflict"
+          "date_conflict",
+          "approximate_count",
+          "implausible_count",
+          "count_contradiction"
         ],
         "title": "FlagReason",
         "type": "string"
@@ -289,6 +305,160 @@
         "title": "Language",
         "type": "string"
       },
+      "ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "multipleOf": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal"
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "multipleOf": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
+        ],
+        "title": "ObservationField[Annotated[float, FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=0), MultipleOf(multiple_of=0.5)])]]",
+        "type": "object"
+      },
+      "ObservationField_BroodPattern_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroodPattern"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroodPattern"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
+        ],
+        "title": "ObservationField[BroodPattern]",
+        "type": "object"
+      },
       "ObservationField_BroodState_": {
         "additionalProperties": false,
         "properties": {
@@ -352,7 +522,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[BroodState]",
         "type": "object"
@@ -420,7 +596,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[QueenSeen]",
         "type": "object"
@@ -488,7 +670,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[StoresState]",
         "type": "object"
@@ -556,7 +744,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[Temperament]",
         "type": "object"
@@ -628,7 +822,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[UUID]",
         "type": "object"
@@ -700,7 +900,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[date]",
         "type": "object"
@@ -770,7 +976,13 @@
           }
         },
         "required": [
-          "status"
+          "status",
+          "value",
+          "proposal",
+          "verbatim",
+          "segment_refs",
+          "confidence",
+          "flag_reason"
         ],
         "title": "ObservationField[str]",
         "type": "object"
@@ -863,10 +1075,46 @@
             ],
             "title": "Actions To Do"
           },
+          "bee_frames": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "multipleOf": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bee Frames"
+          },
           "brood": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/BroodState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "brood_frames": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "multipleOf": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brood Frames"
+          },
+          "brood_pattern": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroodPattern"
               },
               {
                 "type": "null"
@@ -904,6 +1152,19 @@
                 "type": "null"
               }
             ]
+          },
+          "stores_frames": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "multipleOf": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stores Frames"
           },
           "temperament": {
             "anyOf": [
@@ -955,8 +1216,17 @@
             "title": "Audio Available",
             "type": "boolean"
           },
+          "bee_frames": {
+            "$ref": "#/components/schemas/ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____"
+          },
           "brood": {
             "$ref": "#/components/schemas/ObservationField_BroodState_"
+          },
+          "brood_frames": {
+            "$ref": "#/components/schemas/ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____"
+          },
+          "brood_pattern": {
+            "$ref": "#/components/schemas/ObservationField_BroodPattern_"
           },
           "captured_on": {
             "format": "date",
@@ -1024,6 +1294,9 @@
           "stores": {
             "$ref": "#/components/schemas/ObservationField_StoresState_"
           },
+          "stores_frames": {
+            "$ref": "#/components/schemas/ObservationField_Annotated_float__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_0__5_____"
+          },
           "temperament": {
             "$ref": "#/components/schemas/ObservationField_Temperament_"
           },
@@ -1052,13 +1325,22 @@
           "recording_id",
           "transcript_id",
           "language",
+          "detected_language",
           "captured_on",
+          "spoken_hive_identifier",
           "hive",
           "inspection_date",
           "queen_seen",
           "brood",
           "stores",
           "temperament",
+          "brood_pattern",
+          "brood_frames",
+          "stores_frames",
+          "bee_frames",
+          "treatments",
+          "actions_to_do",
+          "confirmed_at",
           "provenance",
           "version",
           "audio_available",
@@ -1163,7 +1445,13 @@
           "duration_seconds",
           "language",
           "audio_format",
-          "state"
+          "state",
+          "retention_expires_at",
+          "audio_available",
+          "failure_reason",
+          "failure_stage",
+          "reprocess_failed",
+          "eval_consent_at"
         ],
         "title": "Recording",
         "type": "object"
@@ -1320,7 +1608,8 @@
           "id",
           "recording_id",
           "full_text",
-          "segments"
+          "segments",
+          "language_detected"
         ],
         "title": "Transcript",
         "type": "object"
@@ -1356,7 +1645,8 @@
         "required": [
           "text",
           "start_seconds",
-          "end_seconds"
+          "end_seconds",
+          "confidence"
         ],
         "title": "TranscriptSegment",
         "type": "object"
@@ -1386,7 +1676,8 @@
         },
         "required": [
           "product",
-          "dose"
+          "dose",
+          "applied_on"
         ],
         "title": "Treatment",
         "type": "object"

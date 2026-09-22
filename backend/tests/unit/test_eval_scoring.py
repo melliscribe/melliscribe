@@ -16,6 +16,7 @@ from melliscribe.evals.scoring import find_glossary_hits
 from melliscribe.evals.scoring import score_case
 from melliscribe.evals.scoring import summarise_extraction
 from melliscribe.models.inspection import FieldStatus
+from melliscribe.models.inspection import FrameCount
 from melliscribe.models.inspection import ObservationField
 from melliscribe.models.vocabulary import Temperament
 
@@ -156,3 +157,18 @@ def test_an_accuracy_regression_against_the_baseline_blocks():
 def test_transcription_gates_require_glossary_recall():
     failures = check_transcription_gates({"fr": 10.0}, {"fr": 80.0}, baseline_wer=None)
     assert any("SC-010" in f for f in failures)
+
+
+def test_counts_are_compared_as_numbers():
+    case = _case(brood_frames={"status": "system_derived", "value": "5"})
+    fields = {
+        "brood_frames": ObservationField[FrameCount](
+            status=FieldStatus.SYSTEM_DERIVED, value=5.0, verbatim=["cinq cadres"]
+        )
+    }
+    assert score_case(case, fields).correct == {"brood_frames": True}
+    half = _case(brood_frames={"status": "system_derived", "value": "3.5"})
+    fields["brood_frames"] = ObservationField[FrameCount](
+        status=FieldStatus.SYSTEM_DERIVED, value=3.5
+    )
+    assert score_case(half, fields).correct == {"brood_frames": True}

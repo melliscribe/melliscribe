@@ -43,7 +43,7 @@ above.
 | `hives` | The beekeeper's hive identifiers at the time |
 | `segments` *or* `transcript_ref` | Inline synthetic segments, or a transcript JSON in private storage |
 | `expected.is_inspection` | Whether a record should be produced (FR-016b) |
-| `expected.fields.<name>` | `{"status": ..., "value": ...}` for `hive` (identifier), `inspection_date` (ISO), `queen_seen`, `brood`, `stores`, `temperament`. Omit a field to leave it unscored. |
+| `expected.fields.<name>` | `{"status": ..., "value": ...}` for `hive` (identifier), `inspection_date` (ISO), `queen_seen`, `brood`, `brood_pattern`, `stores`, `temperament`, and the counts `brood_frames`, `stores_frames`, `bee_frames` (a number in frames, e.g. `"5"` or `"3.5"`). Omit a field to leave it unscored. |
 
 A field is accurate only when status **and** value match (SC-005). A field
 expected `unknown` that comes back with a value or a proposal is an SC-004
@@ -62,7 +62,7 @@ violation and fails the build.
 
 | File | Purpose | Size |
 |---|---|---|
-| `smoke.jsonl` | Thin CI gate while the pipeline is built (ADR-0005 mitigation) | 6 synthetic extraction cases, 3 pairs |
+| `smoke.jsonl` | Thin CI gate while the pipeline is built (ADR-0005 mitigation) | 10 synthetic extraction cases, 5 pairs |
 | `extraction.jsonl`, `transcription.jsonl`, `parity.jsonl` | The full gate that closes US1 (T093) | ≥50 per language, ≥20 paired — **to be assembled** |
 
 The maintainer appends the ADR-0002 spike recordings (T009) to `smoke.jsonl` as

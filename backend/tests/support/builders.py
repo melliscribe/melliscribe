@@ -95,6 +95,10 @@ def build_output(**overrides: Any) -> ExtractionOutput:
         "brood": unmentioned(),
         "stores": unmentioned(),
         "temperament": unmentioned(),
+        "brood_pattern": unmentioned(),
+        "brood_frames": uncounted(),
+        "stores_frames": uncounted(),
+        "bee_frames": uncounted(),
         "treatments": [],
         "actions_to_do": [],
         "detected_language": None,
@@ -137,3 +141,55 @@ def heard_text(
     observation = heard(text, phrase, segment, **kwargs)
     observation["text"] = observation.pop("value")
     return observation
+
+
+def counted(
+    value: float | None,
+    phrase: str,
+    segment: int = 0,
+    *,
+    approximate: bool = False,
+    unit: str | None = "frames",
+    confidence: float = 0.95,
+    issue: str | None = None,
+) -> dict[str, Any]:
+    """Return a frame count that was heard.
+
+    Args:
+        value: The number said, or None when no number was heard.
+        phrase: The verbatim phrase.
+        segment: The segment index.
+        approximate: Whether it was said as a range or a hedge.
+        unit: What was counted, frames or faces.
+        confidence: The extraction confidence.
+        issue: The extraction issue, if any.
+
+    Returns:
+        The count as a dict.
+    """
+    return {
+        "mentioned": True,
+        "value": value,
+        "approximate": approximate,
+        "unit": unit,
+        "confidence": confidence,
+        "phrases": [{"text": phrase, "segment_index": segment}],
+        "issue": issue,
+    }
+
+
+def uncounted() -> dict[str, Any]:
+    """Return a frame count the dictation did not give.
+
+    Returns:
+        The count as a dict.
+    """
+    return {
+        "mentioned": False,
+        "value": None,
+        "approximate": False,
+        "unit": None,
+        "confidence": 0.0,
+        "phrases": [],
+        "issue": None,
+    }

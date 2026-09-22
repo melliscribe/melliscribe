@@ -9,6 +9,12 @@ from pydantic import ConfigDict
 
 
 class Model(BaseModel):
-    """A strict Pydantic model: unknown fields are rejected, not ignored."""
+    """A strict Pydantic model: unknown fields are rejected, not ignored.
 
-    model_config = ConfigDict(extra="forbid")
+    Fields with defaults are still required in serialization schemas, because
+    the server always sends them: the generated client types then say so.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid", json_schema_serialization_defaults_required=True
+    )
