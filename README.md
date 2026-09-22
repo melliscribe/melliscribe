@@ -155,4 +155,7 @@ and `pre-commit install` sets up the hooks, including license headers.
 
 ## License
 
-[AGPL-3.0-or-later](https://www.gnu.org/licenses/agpl-3.0.html). Copyright (C) 2026 Jean-Christophe Giret.
+[GNU Affero General Public License v3.0 or later](LICENSE). Copyright (C) 2026 Jean-Christophe Giret.
+
+If you run a modified Melliscribe as a service, the AGPL requires you to offer
+its source to the users of that service.
