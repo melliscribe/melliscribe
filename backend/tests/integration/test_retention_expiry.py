@@ -4,12 +4,18 @@
 
 from __future__ import annotations
 
+import uuid
 from datetime import UTC
 from datetime import datetime
+from datetime import timedelta
+
+from sqlalchemy import update
 
 from melliscribe.cli.main import main
+from melliscribe.db.tables import RecordingRow
 from melliscribe.domain.retention.expiry import apply_expiry
 from melliscribe.domain.retention.expiry import find_due
+from melliscribe.domain.retention.policy import WARNING_DAYS
 from tests.support.builders import build_output
 from tests.support.builders import heard
 
@@ -71,10 +77,34 @@ def test_the_api_exposes_the_warning(api):
 
 
 def test_retention_cli_dry_run_changes_nothing(api, monkeypatch, capsys):
-    _upload(api, build_output(), captured_at="2020-01-01T09:00:00+00:00")
+    recording_id = _upload(api, build_output(), captured_at="2020-01-01T09:00:00+00:00")
+    with api.services.session_factory.begin() as session:
+        session.execute(
+            update(RecordingRow)
+            .where(RecordingRow.id == uuid.UUID(recording_id))
+            .values(retention_expires_at=datetime(2021, 1, 1, tzinfo=UTC))
+        )
     monkeypatch.setattr(
         "melliscribe.cli.retention.build_services", lambda: api.services
     )
     assert main(["retention", "apply", "--dry-run"]) == 0
     assert "would delete 1" in capsys.readouterr().out
     assert all(r["audio_available"] for r in api.client.get("/records").json())
+
+
+def test_an_old_imported_file_is_not_already_expired(api):
+    """FR-027e: the beekeeper is always warned before anything is removed."""
+    recording = api.upload(captured_at="2020-01-01T09:00:00+00:00").json()
+    expires = datetime.fromisoformat(recording["retention_expires_at"])
+    assert expires > datetime.now(UTC) + timedelta(days=WARNING_DAYS - 1)
+
+
+def test_expiry_never_deletes_audio_that_was_never_processed(api):
+    """The audio is the only copy until a transcript exists."""
+    api.transcriber.fail_with = RuntimeError("asr down")
+    recording_id = api.upload(captured_at="2020-01-01T09:00:00+00:00").json()["id"]
+    far_future = datetime.now(UTC) + timedelta(days=3650)
+    with api.services.session_factory.begin() as session:
+        removed = apply_expiry(session, api.services.audio_store, now=far_future)
+    assert recording_id not in removed
+    assert api.client.get(f"/recordings/{recording_id}").json()["audio_available"]

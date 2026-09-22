@@ -21,6 +21,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import Any
 
+from melliscribe.domain.inspection.corrections import has_unsettled_fields
 from melliscribe.domain.inspection.counts import assign_count
 from melliscribe.domain.inspection.counts import flag_contradictions
 from melliscribe.domain.inspection.dates import resolve_inspection_date
@@ -141,7 +142,11 @@ def assemble_record(
     if context.previous is not None:
         _preserve_confirmed(document, context.previous)
     flag_contradictions(document)
-    return InspectionRecord.model_validate(document)
+    record = InspectionRecord.model_validate(document)
+    if record.confirmed_at is not None and has_unsettled_fields(record):
+        # New unchecked values arrived: the record needs the beekeeper again.
+        record = record.model_copy(update={"confirmed_at": None})
+    return record
 
 
 def _preserve_confirmed(document: dict[str, Any], previous: InspectionRecord) -> None:

@@ -29,6 +29,8 @@ from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import Uuid
+from sqlalchemy import event
+from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -121,6 +123,7 @@ class RecordingRow(Base):
     language: Mapped[str] = mapped_column(String(2))
     audio_format: Mapped[str] = mapped_column(String(128))
     state: Mapped[str] = mapped_column(String(32), index=True)
+    state_changed_at: Mapped[datetime | None]
     retention_expires_at: Mapped[datetime | None]
     audio_available: Mapped[bool] = mapped_column(Boolean)
     audio_key: Mapped[str | None] = mapped_column(String(256))
@@ -187,3 +190,22 @@ class LLMTraceRow(Base):
     error: Mapped[str | None] = mapped_column(Text)
     fallback_taken: Mapped[bool] = mapped_column(Boolean)
     created_at: Mapped[datetime] = mapped_column(index=True)
+
+
+@event.listens_for(RecordingRow, "before_insert")
+@event.listens_for(RecordingRow, "before_update")
+def _stamp_state_change(mapper: object, connection: object, row: RecordingRow) -> None:
+    """Timestamp every state change made through the ORM.
+
+    The queue uses it to tell a recording in flight from one a dead pass left
+    behind. Core `UPDATE`s set it themselves.
+
+    Args:
+        mapper: Unused.
+        connection: Unused.
+        row: The recording being written.
+    """
+    del mapper, connection
+    history = inspect(row).attrs.state.history
+    if row.state_changed_at is None or history.has_changes():
+        row.state_changed_at = datetime.now(UTC)

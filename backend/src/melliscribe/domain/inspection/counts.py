@@ -128,7 +128,9 @@ def flag_contradictions(document: dict[str, Any]) -> None:
 
     Neither value is preferred, so neither keeps a value or a proposal; the
     phrases stay visible. A confirmed field is never touched — only its
-    unconfirmed counterpart is flagged.
+    unconfirmed counterpart is flagged. A state already flagged as an unclear
+    correction is not a contradiction: FR-006f has handled it, and a clearly
+    stated count stands.
 
     Args:
         document: The assembled record, as a dict; updated in place.
@@ -139,6 +141,11 @@ def flag_contradictions(document: dict[str, Any]) -> None:
     )
     for count_name, state_name, present, absent in pairs:
         count, state = document[count_name], document[state_name]
+        if FlagReason.UNCLEAR_CORRECTION in {
+            count["flag_reason"],
+            state["flag_reason"],
+        }:
+            continue
         count_value = (
             count["value"] if count["value"] is not None else count["proposal"]
         )

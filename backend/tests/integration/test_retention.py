@@ -4,6 +4,11 @@
 
 from __future__ import annotations
 
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
+
+from melliscribe.domain.retention.policy import WARNING_DAYS
 from tests.support.builders import build_output
 from tests.support.builders import heard
 
@@ -33,6 +38,15 @@ def test_deletion_ignores_the_retention_setting(api):
 
 def test_changing_the_retention_period_moves_existing_expiries(api):
     recording_id = api.upload(captured_at="2026-05-12T09:30:00+00:00").json()["id"]
-    api.client.patch("/settings", json={"audio_retention_days": 30})
+    api.client.patch("/settings", json={"audio_retention_days": 3000})
     recording = api.client.get(f"/recordings/{recording_id}").json()
-    assert recording["retention_expires_at"].startswith("2026-06-11")
+    assert recording["retention_expires_at"].startswith("2034-07-29")
+
+
+def test_shortening_the_period_never_expires_audio_without_warning(api):
+    """FR-027e: the warning window is a floor, however old the recording."""
+    recording_id = api.upload(captured_at="2026-05-12T09:30:00+00:00").json()["id"]
+    api.client.patch("/settings", json={"audio_retention_days": 1})
+    recording = api.client.get(f"/recordings/{recording_id}").json()
+    expires = datetime.fromisoformat(recording["retention_expires_at"])
+    assert expires > datetime.now(UTC) + timedelta(days=WARNING_DAYS - 1)

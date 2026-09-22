@@ -47,7 +47,14 @@ nav.tabs {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; gap: 8px; padding: 8px; background: var(--bg); border-top: 3px solid var(--border);
 }
-nav.tabs button { flex: 1; min-height: var(--target); }
+nav.tabs button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--target);
+  padding: 0 4px;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
 nav.tabs button[aria-current="page"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
 .record-button {
@@ -71,3 +78,13 @@ nav.tabs button[aria-current="page"] { background: var(--accent); color: var(--a
 .verbatim { color: var(--muted); font-style: italic; }
 .choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--gap); }
 .list-item { display: flex; justify-content: space-between; align-items: center; gap: var(--gap); }
+
+/* Checkboxes are targets too (FR-004): sized for a gloved finger. */
+input[type="checkbox"] {
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  flex: 0 0 48px;
+  accent-color: var(--accent);
+}
+label.row { align-items: center; flex-wrap: nowrap; }

@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Build the configured transcription backend.
 
-ADR-0002 has not chosen a provider yet, so the only backend is the one that
-refuses with an attributable error. When the ADR is Accepted, its adapter is
-registered here and selected with `MELLISCRIBE_ASR_PROVIDER`.
+ADR-0002 has not chosen a provider yet. The default refuses every call with an
+attributable error; `MELLISCRIBE_ASR_PROVIDER=faster-whisper` selects the
+provisional self-hosted candidate (model from `MELLISCRIBE_ASR_MODEL`, default
+`small`), which needs the `asr-local` extra.
 """
 
 from __future__ import annotations
@@ -30,5 +31,16 @@ def build_transcription_backend() -> TranscriptionBackend:
     provider = os.environ.get("MELLISCRIBE_ASR_PROVIDER", "unconfigured")
     if provider == "unconfigured":
         return UnconfiguredTranscriptionBackend()
+    if provider == "faster-whisper":
+        from melliscribe.pipeline.transcription.faster_whisper import (  # noqa: PLC0415
+            DEFAULT_MODEL,
+        )
+        from melliscribe.pipeline.transcription.faster_whisper import (  # noqa: PLC0415
+            FasterWhisperBackend,
+        )
+
+        return FasterWhisperBackend(
+            os.environ.get("MELLISCRIBE_ASR_MODEL", DEFAULT_MODEL)
+        )
     msg = f"unknown transcription provider {provider!r} (see ADR-0002)"
     raise ValueError(msg)

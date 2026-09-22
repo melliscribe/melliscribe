@@ -62,7 +62,7 @@ violation and fails the build.
 
 | File | Purpose | Size |
 |---|---|---|
-| `smoke.jsonl` | Thin CI gate while the pipeline is built (ADR-0005 mitigation) | 10 synthetic extraction cases, 5 pairs |
+| `smoke.jsonl` | Thin CI gate while the pipeline is built (ADR-0005 mitigation) | 32 synthetic extraction cases, 16 pairs |
 | `extraction.jsonl`, `transcription.jsonl`, `parity.jsonl` | The full gate that closes US1 (T093) | ≥50 per language, ≥20 paired — **to be assembled** |
 
 The maintainer appends the ADR-0002 spike recordings (T009) to `smoke.jsonl` as

@@ -325,6 +325,7 @@ effect.
 - **FR-006**: The system MUST produce, from a dictation, a structured
   inspection record containing at minimum: hive identity, inspection date,
   whether the queen was seen, brood state, brood pattern, stores state, colony temperament,
+  the number of frames carrying brood, stores and bees,
   treatments applied, and actions to do.
 - **FR-006a**: Each observation field MUST hold a coded value drawn from a
   controlled vocabulary defined for that field, so that records are comparable
@@ -384,6 +385,10 @@ effect.
   MUST be flagged as uncertain and neither value is preferred: a brood frame
   count above zero with no brood, or zero with brood present; a stores frame
   count above zero with stores stated as none, or zero with stores present.
+  A spoken self-correction between the two is handled by FR-006f instead: the
+  state field is flagged as an unclear correction and a clearly stated count
+  stands. Counts are not checked against each other (more brood frames than
+  bee-covered frames, say): that is a judgement left to the beekeeper.
 - **FR-006m**: Brood stages and brood pattern MUST be recorded as two separate
   observation fields, each with its own controlled vocabulary: the brood
   field holds which stages are present (all stages, no eggs, no brood, drone

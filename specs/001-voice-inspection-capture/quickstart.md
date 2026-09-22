@@ -10,7 +10,11 @@ being restated here.
 
 - Python 3.13, `uv`, Node 20+, PostgreSQL running
 - `ANTHROPIC_API_KEY` set, or an active profile from `ant auth login`
-- ASR backend configured per ADR-0002
+- ASR backend configured per ADR-0002 — until it is decided, the provisional
+  self-hosted candidate: `uv sync --project backend --extra asr-local` and
+  `MELLISCRIBE_ASR_PROVIDER=faster-whisper` (optionally `MELLISCRIBE_ASR_MODEL=small`).
+  Local transcription is CPU-heavy: set `MELLISCRIBE_PROCESS_ON_UPLOAD=false` on
+  the API and let `melliscribe worker` do the processing.
 - A bilingual eval dataset manifest, with its audio in private storage
 
 ## Setup

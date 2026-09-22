@@ -14,6 +14,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import Any
 
+from melliscribe.domain.inspection.status import normalise_text
 from melliscribe.models.inspection import COUNT_FIELD_NAMES
 from melliscribe.models.inspection import OBSERVATION_FIELD_NAMES
 from melliscribe.models.inspection import SCALAR_FIELD_NAMES
@@ -49,7 +50,24 @@ def confirm_field(field: ObservationField[Any], value: Any) -> dict[str, Any]:  
     }
 
 
-def _confirmed_text(text: str) -> dict[str, Any]:
+def _confirmed_text(text: str, heard: list[ObservationField[Any]]) -> dict[str, Any]:
+    """Confirm a free-text entry, keeping the phrases it was heard as.
+
+    A corrected product, dose or action keeps the provenance of the item that
+    was heard with the same words (FR-006b), so review can still play it back.
+
+    Args:
+        text: The text the beekeeper confirmed.
+        heard: The fields previously in that list slot, to match against.
+
+    Returns:
+        The confirmed field, as a dict.
+    """
+    key = normalise_text(text)
+    for field in heard:
+        said = field.value if field.value is not None else field.proposal
+        if said is not None and normalise_text(str(said)) == key:
+            return confirm_field(field, text)
     return {"status": FieldStatus.CONFIRMED, "value": text}
 
 
@@ -69,17 +87,21 @@ def apply_patch(record: InspectionRecord, patch: RecordPatch) -> InspectionRecor
         if name in present:
             document[name] = confirm_field(getattr(record, name), getattr(patch, name))
     if "treatments" in present:
+        products = [t.product for t in record.treatments]
+        doses = [t.dose for t in record.treatments]
         document["treatments"] = [
             {
-                "product": _confirmed_text(t.product),
-                "dose": _confirmed_text(t.dose),
+                "product": _confirmed_text(t.product, products),
+                "dose": _confirmed_text(t.dose, doses),
                 "applied_on": t.applied_on,
             }
             for t in patch.treatments or []
         ]
     if "actions_to_do" in present:
+        actions = [a.text for a in record.actions_to_do]
         document["actions_to_do"] = [
-            {"text": _confirmed_text(text)} for text in patch.actions_to_do or []
+            {"text": _confirmed_text(text, actions)}
+            for text in patch.actions_to_do or []
         ]
     return InspectionRecord.model_validate(document)
 
@@ -167,3 +189,18 @@ def confirm_record(
         action["text"] = confirm(action["text"])
     document["confirmed_at"] = now or datetime.now(UTC)
     return InspectionRecord.model_validate(document)
+
+
+def has_unsettled_fields(record: InspectionRecord) -> bool:
+    """Tell whether a record still has fields the beekeeper has not settled.
+
+    Args:
+        record: The record.
+
+    Returns:
+        True when a field is still system-derived or uncertain, or the hive is
+        unresolved. Fields the dictation never covered do not count.
+    """
+    if count_open_flags(record):
+        return True
+    return any(f.status is FieldStatus.SYSTEM_DERIVED for f in list_fields(record))

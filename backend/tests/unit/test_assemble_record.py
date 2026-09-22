@@ -11,6 +11,7 @@ from datetime import datetime
 
 from melliscribe.domain.inspection.assemble import AssemblyContext
 from melliscribe.domain.inspection.assemble import assemble_record as _assemble
+from melliscribe.domain.inspection.corrections import confirm_record
 from melliscribe.models.hive import Hive
 from melliscribe.models.inspection import FieldStatus
 from melliscribe.models.inspection import FlagReason
@@ -313,3 +314,30 @@ def test_a_record_saved_before_the_counts_existed_still_loads():
         assemble_record(_full_output(), TRANSCRIPT, _context())
     ).model_validate(document)
     assert record.bee_frames.status is FieldStatus.UNKNOWN
+
+
+def test_a_clearly_stated_count_stands_after_an_unclear_correction():
+    """FR-006l defers to FR-006f: a correction is not a contradiction."""
+    record = _assemble_brood(
+        stores=heard("none", "Pas de réserves", 5, issue="unclear_correction"),
+        stores_frames=counted(2, "deux de miel", 4),
+    )
+    assert record.stores.flag_reason is FlagReason.UNCLEAR_CORRECTION
+    assert record.stores_frames.status is FieldStatus.SYSTEM_DERIVED
+    assert record.stores_frames.value == 2
+
+
+def test_reprocessing_keeps_confirmation_only_if_nothing_new_is_unsettled():
+    """A re-processed record with new unchecked values is no longer confirmed."""
+    confirmed = assemble_record(_full_output(), TRANSCRIPT, _context()).model_copy(
+        update={"confirmed_at": datetime.now(UTC)}
+    )
+    second = assemble_record(_full_output(), TRANSCRIPT, _context(previous=confirmed))
+    assert second.confirmed_at is None
+
+
+def test_reprocessing_a_fully_confirmed_record_stays_confirmed():
+    first = assemble_record(_full_output(), TRANSCRIPT, _context())
+    confirmed = confirm_record(first)
+    second = assemble_record(_full_output(), TRANSCRIPT, _context(previous=confirmed))
+    assert second.confirmed_at == confirmed.confirmed_at

@@ -400,3 +400,17 @@ superseding. Tests first, per the constitution.
 - [X] T144 [US1] Add the brood pattern editor and a gloved count picker (large buttons, half-frame steps from 0 to 40, "not observed") to the review screen in `frontend/src/review/`, showing a flagged count with its phrase and no suggested number per FR-004, FR-022, FR-006k (missing)
 - [X] T145 [US1] Extend the eval harness to score numeric counts and `brood_pattern`, add paired French/English synthetic smoke cases with counts (exact, approximate, faces, contradictory) to `backend/evals/datasets/smoke.jsonl`, and run `melliscribe eval run` for the prompt v2 and schema v2 change, with the result in the pull request per Constitution II, SC-005, SC-011 (missing) — run 2026-09-23 after moving to schema v3 (the typed schema exceeded the grammar limit): 10/10 cases, 100% fr and en, baseline in `backend/evals/baselines/smoke.extraction.json`
 - [X] T146 [P] Document the brood pattern field and the three counts in `specs/001-voice-inspection-capture/data-model.md` under Implementation notes per plan: data model (partial)
+
+---
+
+## Phase 9: Unblocking work while ADR-0002 is open
+
+Added 2026-09-23 at the maintainer's request: work that needs neither the
+spike recordings nor the ADR-0002 decision. None of it closes T011 or T060.
+
+- [X] T147 [US1] Build the provisional self-hosted candidate `FasterWhisperBackend` in `backend/src/melliscribe/pipeline/transcription/faster_whisper.py` (optional `asr-local` extra, glossary initial prompt, segment timestamps, detected language reported only above 80% confidence), selectable in the factory, with tests against a fake model, per ADR-0002 criteria 2–4
+- [X] T148 [US1] Grow `backend/evals/datasets/smoke.jsonl` to 32 synthetic cases (16 fr/en pairs) covering corrections, several hives, unknown hive, treatment-only, spoken dates, stores correction, no eggs with patchy brood, other language and hedged counts; record the passing run as the baseline per Constitution II, SC-004, SC-005, SC-011
+- [X] T149 Fix the analysis wording findings in `spec.md`: frame counts in FR-006's list (I2), and FR-006l's scope — corrections and count-to-count checks (U1); I3 is covered by the `models/vocabulary.py` docstring
+- [X] T150 [P] Add a component test for `frontend/src/review/CountPicker.tsx` (no suggested number, half steps, bounds, not observed) per FR-004, FR-006k
+- [X] T151 Run a code review over the branch and fix what it finds — 10 findings, all fixed with tests: stranded recordings reclaimed after 15 min (migration 0002) and unexpected errors failed per recording; hotwords within Whisper's token budget on every window; one transcription at a time; treatments and actions saved only when changed, keeping provenance; confirmation dropped when re-processing adds unchecked values; audio never expired before a transcript exists nor sooner than 30 days out; an unclear correction is not a contradiction; accept disabled with nothing heard; dates saved on an explicit tap
+- [X] T152 [US1] Add a development command that turns a typed transcript into a stored record, and walk the review screen in a browser (quickstart scenario 3 without gloves) — `melliscribe dev seed`; walked headless at phone size, which found and fixed an overflowing tab bar and an undersized consent checkbox

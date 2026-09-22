@@ -85,7 +85,7 @@ def update_settings(session: Session, update: AccountSettingsUpdate) -> AccountS
         ):
             recording.retention_expires_at = compute_expiry(
                 recording.captured_at, update.audio_retention_days
-            )
+            )  # never sooner than the warning window (FR-027e)
     session.flush()
     return get_settings(session)
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from tests.support.builders import build_output
 from tests.support.builders import heard
+from tests.support.builders import heard_text
 
 
 def _record(api):
@@ -137,3 +138,55 @@ def test_a_negative_count_is_rejected(api):
         json={"version": record["version"], "bee_frames": -1},
     )
     assert response.status_code == 422
+
+
+def _record_with_treatment(api):
+    api.extractor.output = build_output(
+        treatments=[
+            {
+                "product": heard_text("Apivar", "deux lanières d'Apivar", 1),
+                "dose": heard_text("deux lanières", "deux lanières d'Apivar", 1),
+                "applied_on": "2026-05-10",
+            }
+        ],
+        actions_to_do=[
+            {
+                "text": "poser une hausse",
+                "confidence": 0.9,
+                "phrases": [{"text": "poser une hausse", "segment_index": 1}],
+                "issue": None,
+            }
+        ],
+    )
+    api.upload("Ruche trois.\nJ'ai mis deux lanières d'Apivar, poser une hausse.")
+    [record] = api.client.get("/records").json()
+    return record
+
+
+def test_a_corrected_treatment_keeps_the_phrase_it_was_heard_as(api):
+    record = _record_with_treatment(api)
+    response = api.client.patch(
+        f"/records/{record['id']}",
+        json={
+            "version": record["version"],
+            "treatments": [
+                {"product": "Apivar", "dose": "3 lanières", "applied_on": "2026-05-10"}
+            ],
+        },
+    ).json()
+    [treatment] = response["treatments"]
+    assert treatment["product"]["verbatim"] == ["deux lanières d'Apivar"]
+    assert treatment["product"]["segment_refs"]
+    assert treatment["dose"]["value"] == "3 lanières"
+    assert treatment["applied_on"] == "2026-05-10"
+
+
+def test_patching_actions_leaves_treatments_untouched(api):
+    """Only what the beekeeper changed is confirmed."""
+    record = _record_with_treatment(api)
+    response = api.client.patch(
+        f"/records/{record['id']}",
+        json={"version": record["version"], "actions_to_do": ["poser une hausse"]},
+    ).json()
+    assert response["treatments"] == record["treatments"]
+    assert response["actions_to_do"][0]["text"]["verbatim"] == ["poser une hausse"]

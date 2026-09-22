@@ -17,7 +17,7 @@ ignore = [
 ]
 
 [lint.per-file-ignores]
-"tests/**" = ["S101", "D", "PLR2004", "ANN", "INP001", "FBT", "ARG", "EM", "TRY003", "PLR0913"]
+"tests/**" = ["S101", "D", "PLR2004", "ANN", "INP001", "FBT", "ARG", "EM", "TRY003", "PLR0913", "PLC0415"]
 "src/melliscribe/cli/**" = ["T201"]
 # FastAPI signatures: one parameter per query/form field, error codes not messages.
 "src/melliscribe/api/**" = ["EM101", "PLR0913", "PLR0917", "FBT001"]

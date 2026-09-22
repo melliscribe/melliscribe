@@ -11,7 +11,7 @@ anything of yours.
 
 | What is sent | Sent to | Why |
 |---|---|---|
-| The audio of a recording | **Speech recognition — not chosen yet.** Until it is chosen, no audio leaves the Melliscribe server. | To turn your voice into text. |
+| The audio of a recording | **Nobody.** For now your voice is turned into text on the Melliscribe server itself; the final choice of speech recognition is still being made, and any outside service would be listed here before receiving anything. | To turn your voice into text. |
 | The text of what you said, with the dates and hive names you gave | **Anthropic (Claude)** | To turn that text into the fields of your record. |
 
 What is **not** sent anywhere else: your hive list, your settings, and your
@@ -35,7 +35,7 @@ quoi que ce soit de vous.
 
 | Ce qui est envoyé | Envoyé à | Pourquoi |
 |---|---|---|
-| L'audio d'un enregistrement | **Reconnaissance vocale — pas encore choisie.** Tant qu'elle ne l'est pas, aucun audio ne quitte le serveur Melliscribe. | Pour transformer votre voix en texte. |
+| L'audio d'un enregistrement | **Personne.** Pour l'instant, votre voix est transformée en texte sur le serveur Melliscribe lui-même ; le choix définitif de la reconnaissance vocale est encore en cours, et tout service extérieur serait listé ici avant de recevoir quoi que ce soit. | Pour transformer votre voix en texte. |
 | Le texte de ce que vous avez dit, avec les dates et noms de ruches donnés | **Anthropic (Claude)** | Pour transformer ce texte en champs de votre fiche. |
 
 Ce qui n'est envoyé **nulle part ailleurs** : votre liste de ruches, vos

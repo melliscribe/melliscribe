@@ -13,6 +13,7 @@ import argparse
 import sys
 from typing import TYPE_CHECKING
 
+from melliscribe.cli import dev
 from melliscribe.cli import eval as eval_command
 from melliscribe.cli import extract
 from melliscribe.cli import openapi
@@ -39,6 +40,7 @@ _COMMANDS = (
     trace,
     worker,
     openapi,
+    dev,
 )
 
 

@@ -131,4 +131,10 @@ def build_services() -> Services:
         extractor=extractor,
         trace_sink=trace_sink,
         batch_extractor=ClaudeBatchExtractor(trace_sink),
+        # Off: only `melliscribe worker` processes, keeping CPU-heavy local
+        # transcription out of the API server's threads.
+        process_on_upload=os.environ.get(
+            "MELLISCRIBE_PROCESS_ON_UPLOAD", "true"
+        ).lower()
+        != "false",
     )

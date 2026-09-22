@@ -61,6 +61,26 @@ whether usable segment timings come back.
 Ten recordings will not settle SC-005. They will settle which candidate is worth
 building the full dataset against, which is what this ADR needs.
 
+## Progress — 2026-09-23
+
+**Candidate 1 is built**: self-hosted Whisper through `faster-whisper`
+(`pipeline/transcription/faster_whisper.py`, optional extra `asr-local`,
+selected with `MELLISCRIBE_ASR_PROVIDER=faster-whisper` and
+`MELLISCRIBE_ASR_MODEL`). It is provisional — it exists so a dictation produces
+a record end to end while this ADR is open, and it is the first candidate the
+spike measures, not the decision.
+
+- Criterion 2: the glossary steers recognition through Whisper's initial prompt,
+  in the dictation's language.
+- Criterion 3: segment timestamps come back with every segment.
+- Criterion 4: audio is transcribed on the Melliscribe server; nothing leaves it.
+- The detected language is reported only at 80% confidence or more: on noise
+  the detector still names a language, which would raise false mismatch
+  warnings (FR-026e).
+- Observed on the development machine (CPU, int8, `tiny`): model load plus a
+  3-second clip in 9.6 s. No speech accuracy figure yet — that is criterion 1,
+  and it needs the recordings.
+
 ## Decision
 
 **Not yet made.** Fill this section, set the status to Accepted, and state the

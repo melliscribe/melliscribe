@@ -56,6 +56,12 @@ RATES: dict[str, Rate] = {
     "claude-opus-4-8": Rate(
         Decimal(5), Decimal(25), Decimal("0.50"), Decimal("6.25"), "2026-06-24"
     ),
+    # Self-hosted Whisper (ADR-0002 candidate): no per-call bill; the server's
+    # running cost is outside this table.
+    **{
+        size: Rate(Decimal(0), Decimal(0), Decimal(0), Decimal(0), "2026-09-23")
+        for size in ("tiny", "base", "small", "medium", "large-v3", "turbo")
+    },
 }
 """Maintained by hand. Nothing will remind anyone — check `checked_on`."""
 

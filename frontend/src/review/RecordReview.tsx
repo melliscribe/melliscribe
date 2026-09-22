@@ -110,15 +110,16 @@ export function RecordReview({ recordId, onBack }: { recordId: string; onBack: (
       >
         <p>{t("ui.review.captured_on", { date: formatDate(record.captured_on) })}</p>
         {editing === "inspection_date" ? (
-          <input
-            type="date"
-            lang={language}
-            defaultValue={String(record.inspection_date.value ?? record.inspection_date.proposal ?? "")}
-            onChange={(event) => void patch({ inspection_date: event.target.value || null })}
+          <DateEditor
+            language={language}
+            initial={String(record.inspection_date.value ?? record.inspection_date.proposal ?? "")}
+            onSave={(value) => void patch({ inspection_date: value })}
+            onCancel={() => setEditing(null)}
           />
         ) : (
           <FieldActions
             status={record.inspection_date.status}
+            canAccept={canAccept(record.inspection_date)}
             onAccept={() =>
               void patch({
                 inspection_date: (record.inspection_date.value ??
@@ -151,6 +152,7 @@ export function RecordReview({ recordId, onBack }: { recordId: string; onBack: (
             ) : (
               <FieldActions
                 status={field.status}
+                canAccept={canAccept(field)}
                 onAccept={() => void patch({ [name]: field.value ?? field.proposal ?? null })}
                 onEdit={() => setEditing(name)}
               />
@@ -179,7 +181,7 @@ export function RecordReview({ recordId, onBack }: { recordId: string; onBack: (
             ) : (
               <FieldActions
                 status={field.status}
-                canAccept={field.value != null || field.proposal != null}
+                canAccept={canAccept(field)}
                 onAccept={() => void patch({ [name]: field.value ?? field.proposal ?? null })}
                 onEdit={() => setEditing(name)}
               />
@@ -245,6 +247,47 @@ export function RecordReview({ recordId, onBack }: { recordId: string; onBack: (
   );
 }
 
+/**
+ * "That's right" confirms what was heard — or, for a field never mentioned,
+ * that it was not observed. A flagged field with nothing heard has nothing to
+ * confirm: accepting it would record "not observed" for something said.
+ */
+function canAccept(field: { status: string; value?: unknown; proposal?: unknown }): boolean {
+  return field.status === "unknown" || field.value != null || field.proposal != null;
+}
+
+/** A date is saved once, on an explicit tap — never on each keystroke. */
+function DateEditor({
+  language,
+  initial,
+  onSave,
+  onCancel,
+}: {
+  language: string;
+  initial: string;
+  onSave: (value: string | null) => void;
+  onCancel: () => void;
+}) {
+  const { t } = useI18n();
+  const [value, setValue] = useState(initial);
+  return (
+    <div className="stack">
+      <input type="date" lang={language} value={value} onChange={(event) => setValue(event.target.value)} />
+      <div className="row">
+        <button type="button" className="primary" disabled={!value} onClick={() => onSave(value)}>
+          {t("ui.review.save")}
+        </button>
+        <button type="button" onClick={() => onSave(null)}>
+          {t("ui.review.not_observed")}
+        </button>
+        <button type="button" onClick={onCancel}>
+          {t("ui.review.cancel")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function FieldActions({
   status,
   canAccept = true,
@@ -280,15 +323,16 @@ function TreatmentsAndActions({
 }) {
   const { t } = useI18n();
   const [editing, setEditing] = useState(false);
-  const [treatments, setTreatments] = useState(
-    (record.treatments ?? []).map((tr) => ({
-      product: String(tr.product.value ?? tr.product.proposal ?? ""),
-      dose: String(tr.dose.value ?? tr.dose.proposal ?? ""),
-    })),
+  const initialTreatments = (record.treatments ?? []).map((tr) => ({
+    product: String(tr.product.value ?? tr.product.proposal ?? ""),
+    dose: String(tr.dose.value ?? tr.dose.proposal ?? ""),
+    applied_on: tr.applied_on ?? null,
+  }));
+  const initialActions = (record.actions_to_do ?? []).map((a) =>
+    String(a.text.value ?? a.text.proposal ?? ""),
   );
-  const [actions, setActions] = useState(
-    (record.actions_to_do ?? []).map((a) => String(a.text.value ?? a.text.proposal ?? "")),
-  );
+  const [treatments, setTreatments] = useState(initialTreatments);
+  const [actions, setActions] = useState(initialActions);
   const shared = { recordingId: record.recording_id, audioAvailable: record.audio_available };
   if (!editing) {
     return (
@@ -334,7 +378,7 @@ function TreatmentsAndActions({
           </button>
         </div>
       ))}
-      <button type="button" onClick={() => setTreatments([...treatments, { product: "", dose: "" }])}>
+      <button type="button" onClick={() => setTreatments([...treatments, { product: "", dose: "", applied_on: null }])}>
         {t("ui.review.add_treatment")}
       </button>
       <h2>{t("field.actions_to_do")}</h2>
@@ -358,10 +402,16 @@ function TreatmentsAndActions({
           type="button"
           className="primary"
           onClick={() => {
-            onSave({
-              treatments: treatments.filter((x) => x.product.trim()),
-              actions_to_do: actions.filter((x) => x.trim()),
-            });
+            // Send only the list that changed: saving one must not confirm
+            // the other's unchecked values.
+            const changes: Omit<RecordPatch, "version"> = {};
+            if (JSON.stringify(treatments) !== JSON.stringify(initialTreatments)) {
+              changes.treatments = treatments.filter((x) => x.product.trim());
+            }
+            if (JSON.stringify(actions) !== JSON.stringify(initialActions)) {
+              changes.actions_to_do = actions.filter((x) => x.trim());
+            }
+            if (Object.keys(changes).length > 0) onSave(changes);
             setEditing(false);
           }}
         >

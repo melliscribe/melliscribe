@@ -21,16 +21,13 @@ from sqlalchemy import select
 
 from melliscribe.db import repository
 from melliscribe.db.tables import RecordingRow
-from melliscribe.domain.inspection.corrections import count_open_flags
-from melliscribe.domain.inspection.corrections import list_fields
-from melliscribe.models.inspection import FieldStatus
+from melliscribe.domain.inspection.corrections import has_unsettled_fields
 from melliscribe.models.recording import RecordingState
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
     from melliscribe.db.audio_store import AudioStore
-    from melliscribe.models.inspection import InspectionRecord
 
 _UNPROCESSED = {
     RecordingState.PENDING_UPLOAD,
@@ -55,21 +52,6 @@ class DueRecording:
     recording_id: str
     expires_at: datetime
     needs_attention: bool
-
-
-def has_unsettled_fields(record: InspectionRecord) -> bool:
-    """Tell whether a record still has fields the beekeeper has not settled.
-
-    Args:
-        record: The record.
-
-    Returns:
-        True when a field is still system-derived or uncertain, or the hive is
-        unresolved. Fields the dictation never covered do not count.
-    """
-    if count_open_flags(record):
-        return True
-    return any(f.status is FieldStatus.SYSTEM_DERIVED for f in list_fields(record))
 
 
 def find_due(
@@ -122,7 +104,12 @@ def delete_audio(session: Session, store: AudioStore, recording_id: uuid.UUID) -
 def apply_expiry(
     session: Session, store: AudioStore, *, now: datetime, dry_run: bool = False
 ) -> list[str]:
-    """Delete every audio file past its expiry.
+    """Delete every audio file past its expiry — never one without a transcript.
+
+    Until a transcript exists the audio is the only copy of what was said, so a
+    recording that never processed keeps its audio whatever its expiry; it is
+    listed by [find_due][melliscribe.domain.retention.expiry.find_due] as
+    needing attention instead.
 
     Args:
         session: The database session.
@@ -134,7 +121,10 @@ def apply_expiry(
         The recordings whose audio was (or would be) deleted.
     """
     expired = [
-        d for d in find_due(session, now=now, within_days=0) if d.expires_at <= now
+        d
+        for d in find_due(session, now=now, within_days=0)
+        if d.expires_at <= now
+        and repository.get_transcript(session, uuid.UUID(d.recording_id)) is not None
     ]
     if not dry_run:
         for item in expired:

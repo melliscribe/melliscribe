@@ -23,6 +23,12 @@ dependencies = [
     "uvicorn>=0.30",
 ]
 
+[project.optional-dependencies]
+# Self-hosted speech recognition: ADR-0002's first candidate, provisional until
+# the ADR is decided. Optional because it pulls a model runtime and downloads
+# model weights (0.5-1.5 GB) that a deployment with a hosted ASR never needs.
+asr-local = ["faster-whisper>=1.1"]
+
 [project.scripts]
 melliscribe = "melliscribe.cli.main:main"
 
