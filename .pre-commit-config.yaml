@@ -1,5 +1,8 @@
 # Copyright (C) 2026 Jean-Christophe Giret
 # SPDX-License-Identifier: AGPL-3.0-or-later
+# Spec Kit owns .claude/ and .specify/: its generated files are left exactly as
+# the tool writes them, so upgrades diff cleanly.
+exclude: ^(\.claude|\.specify)/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -25,11 +28,12 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.0
     hooks:
+      # No --config: ruff finds backend/.ruff.toml itself and resolves its
+      # relative paths (tests/**, the migrations exclusion) against backend/,
+      # exactly as the backend-lint CI job does.
       - id: ruff-check
-        args: ["--config", "backend/.ruff.toml"]
         files: ^backend/
       - id: ruff-format
-        args: ["--config", "backend/.ruff.toml"]
         files: ^backend/
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.8.3
