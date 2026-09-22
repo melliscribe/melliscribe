@@ -1,0 +1,62 @@
+[project]
+name = "melliscribe"
+version = "0.1.0"
+description = "Voice-first apiary inspection records."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.13"
+dependencies = [
+    # HTTP API — constitution Technology Constraints.
+    "fastapi>=0.115",
+    # Multipart upload for POST /recordings; required by FastAPI for Form/File.
+    "python-multipart>=0.0.9",
+    # Single source of truth for every entity (Principle IV).
+    "pydantic>=2.9",
+    # Persistence and forward-tested migrations (Principle IV).
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    # PostgreSQL driver for the system of record.
+    "psycopg[binary]>=3.2",
+    # Extraction stage (ADR-0003).
+    "anthropic>=0.60",
+    # ASGI server for running the API.
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+# Self-hosted speech recognition: ADR-0002's first candidate, provisional until
+# the ADR is decided. Optional because it pulls a model runtime and downloads
+# model weights (0.5-1.5 GB) that a deployment with a hosted ASR never needs.
+asr-local = ["faster-whisper>=1.1"]
+
+[project.scripts]
+melliscribe = "melliscribe.cli.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "syrupy>=4.7",
+    "httpx>=0.27",
+    "ruff>=0.8",
+    "ty>=0.0.1a20",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/melliscribe"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "live: calls a paid external API; skipped unless the credentials are set",
+]
+
+[tool.ty.environment]
+python-version = "3.13"
+
+[tool.ty.src]
+include = ["src", "tests"]

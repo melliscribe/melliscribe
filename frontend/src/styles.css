@@ -1,0 +1,90 @@
+/* Copyright (C) 2026 Jean-Christophe Giret
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ *
+ * Field-first (Principle I, FR-004): gloved hands, bright sun. Targets are
+ * large and widely spaced, nothing depends on hover or long-press, and
+ * contrast is high. */
+:root {
+  --bg: #fffaf0;
+  --fg: #1a1a1a;
+  --accent: #8a5a00;
+  --accent-fg: #ffffff;
+  --muted: #5c5346;
+  --ok: #1d6b2f;
+  --warn: #8a3b00;
+  --flag-bg: #fff0d6;
+  --card: #ffffff;
+  --border: #3d3528;
+  --target: 72px;
+  --gap: 16px;
+  font-family: system-ui, sans-serif;
+  font-size: 18px;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 720px; margin: 0 auto; padding: var(--gap); padding-bottom: calc(var(--target) + 3 * var(--gap)); }
+
+button, select, input {
+  font: inherit;
+  min-height: var(--target);
+  border-radius: 12px;
+  border: 3px solid var(--border);
+  padding: 0 20px;
+}
+button { background: var(--card); color: var(--fg); cursor: pointer; font-weight: 600; }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+button:disabled { opacity: 0.5; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+
+.stack { display: flex; flex-direction: column; gap: var(--gap); }
+.row { display: flex; flex-wrap: wrap; gap: var(--gap); }
+.row > button { flex: 1 1 140px; }
+
+nav.tabs {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; gap: 8px; padding: 8px; background: var(--bg); border-top: 3px solid var(--border);
+}
+nav.tabs button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--target);
+  padding: 0 4px;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+nav.tabs button[aria-current="page"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+
+.record-button {
+  width: 100%; min-height: 40vh; font-size: 1.6rem; border-radius: 24px;
+}
+.record-button.recording { background: #b3261e; border-color: #b3261e; color: #fff; }
+
+.notice { padding: var(--gap); border-radius: 12px; border: 3px solid var(--border); background: var(--card); }
+.notice.ok { border-color: var(--ok); color: var(--ok); font-weight: 700; }
+.notice.warn { border-color: var(--warn); color: var(--warn); background: var(--flag-bg); }
+.language-badge { font-size: 1.2rem; font-weight: 700; }
+
+.field { padding: var(--gap); border: 3px solid var(--border); border-radius: 12px; background: var(--card); }
+.field.flagged { background: var(--flag-bg); border-color: var(--warn); }
+.field h3 { margin: 0 0 8px; }
+.status { display: inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 700; border: 2px solid currentColor; }
+.status.confirmed { color: var(--ok); }
+.status.uncertain, .status.unknown { color: var(--warn); }
+.status.system_derived { color: var(--muted); }
+.value { font-size: 1.3rem; font-weight: 700; margin: 8px 0; }
+.verbatim { color: var(--muted); font-style: italic; }
+.choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--gap); }
+.list-item { display: flex; justify-content: space-between; align-items: center; gap: var(--gap); }
+
+/* Checkboxes are targets too (FR-004): sized for a gloved finger. */
+input[type="checkbox"] {
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  flex: 0 0 48px;
+  accent-color: var(--accent);
+}
+label.row { align-items: center; flex-wrap: nowrap; }

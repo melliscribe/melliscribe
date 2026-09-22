@@ -172,3 +172,9 @@ desktop.ini
 *.log
 tmp/
 .tmp/
+
+# Local database and audio written by the backend in development, wherever
+# it is started from (Principle III)
+/backend/var/
+/var/
+*.flac

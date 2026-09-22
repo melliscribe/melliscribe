@@ -1,0 +1,42 @@
+# Copyright (C) 2026 Jean-Christophe Giret
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Spec Kit owns .claude/ and .specify/: its generated files are left exactly as
+# the tool writes them, so upgrades diff cleanly.
+exclude: ^(\.claude|\.specify)/
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.5
+    hooks:
+      - id: insert-license
+        name: license header (python)
+        files: ^backend/.*\.py$
+        exclude: ^backend/src/melliscribe/db/migrations/versions/
+        args: ["--license-filepath", "LICENSE_HEADER.txt", "--comment-style", "#"]
+      - id: insert-license
+        name: license header (typescript)
+        files: ^frontend/(src|tests)/.*\.(ts|tsx)$
+        exclude: ^frontend/src/api/generated/
+        args: ["--license-filepath", "LICENSE_HEADER.txt", "--comment-style", "//"]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      # No --config: ruff finds backend/.ruff.toml itself and resolves its
+      # relative paths (tests/**, the migrations exclusion) against backend/,
+      # exactly as the backend-lint CI job does.
+      - id: ruff-check
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.3
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

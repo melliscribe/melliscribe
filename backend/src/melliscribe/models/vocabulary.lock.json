@@ -1,0 +1,29 @@
+{
+  "queen_seen": {
+    "seen": "The beekeeper saw the queen.",
+    "not_seen": "The beekeeper looked for the queen and did not see her.",
+    "not_looked_for": "The beekeeper says they did not look for the queen."
+  },
+  "brood": {
+    "all_stages": "Eggs, larvae and capped brood are all present.",
+    "no_eggs": "Larvae or capped brood present, but no eggs seen.",
+    "no_brood": "No brood of any stage.",
+    "drone_brood_only": "Only drone brood, including drone brood in worker cells."
+  },
+  "brood_pattern": {
+    "solid": "Brood in a compact, continuous pattern with few empty cells.",
+    "patchy": "Brood in a spotty or irregular pattern with many empty cells."
+  },
+  "stores": {
+    "plentiful": "More stores than the colony needs; room to harvest.",
+    "adequate": "Enough stores for the colony's current needs.",
+    "low": "Stores are short; feeding may be needed.",
+    "none": "No stores to speak of."
+  },
+  "temperament": {
+    "calm": "Bees stay on the frames; little or no reaction.",
+    "nervous": "Bees run on the frames or take to the air, no stinging.",
+    "defensive": "Bees fly at the beekeeper; some stings.",
+    "aggressive": "Sustained attack; many stings; bees follow."
+  }
+}

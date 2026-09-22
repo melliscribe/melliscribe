@@ -1,0 +1,105 @@
+# Copyright (C) 2026 Jean-Christophe Giret
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  backend-lint:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked --all-extras  # type-check optional adapters too
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run ty check
+
+  backend-test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: melliscribe
+          POSTGRES_PASSWORD: melliscribe
+          POSTGRES_DB: melliscribe
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      MELLISCRIBE_DATABASE_URL: postgresql+psycopg://melliscribe:melliscribe@localhost:5432/melliscribe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - uses: pre-commit/action@v3.0.1
+
+  # Principle VIII: every vocabulary value, status and flag reason labelled in
+  # both languages, every glossary term in both forms, released values intact.
+  vocabulary:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run melliscribe vocabulary check
+
+  # Principle IV: the committed OpenAPI schema and frontend types match what the
+  # Pydantic models generate today.
+  generated-types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: uv sync --locked --project backend
+      - run: uv run --project backend melliscribe openapi --output backend/openapi.json
+      - run: npm --prefix frontend ci
+      - run: npm --prefix frontend run generate:api
+      - run: git diff --exit-code backend/openapi.json frontend/src/api/generated
+
+  # Principle II: the extraction gate. Needs the ANTHROPIC_API_KEY secret; a
+  # missing key fails the job rather than skipping the gate.
+  eval:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run melliscribe eval run --dataset datasets/smoke.jsonl --output eval-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: eval-report, path: backend/eval-report.json, if-no-files-found: ignore }

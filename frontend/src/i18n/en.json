@@ -1,0 +1,165 @@
+{
+  "vocabulary": {
+    "queen_seen": {
+      "seen": "Queen seen",
+      "not_seen": "Queen not seen",
+      "not_looked_for": "Did not look for the queen"
+    },
+    "brood": {
+      "all_stages": "Eggs, larvae and capped brood",
+      "no_eggs": "No eggs",
+      "no_brood": "No brood",
+      "drone_brood_only": "Drone brood only"
+    },
+    "brood_pattern": {
+      "solid": "Solid brood",
+      "patchy": "Patchy brood"
+    },
+    "stores": {
+      "plentiful": "Plentiful",
+      "adequate": "Adequate",
+      "low": "Low",
+      "none": "None"
+    },
+    "temperament": {
+      "calm": "Calm",
+      "nervous": "Nervous",
+      "defensive": "Defensive",
+      "aggressive": "Aggressive"
+    }
+  },
+  "field": {
+    "hive": "Hive",
+    "inspection_date": "Inspection date",
+    "queen_seen": "Queen",
+    "brood": "Brood",
+    "stores": "Stores",
+    "temperament": "Temperament",
+    "treatments": "Treatments",
+    "treatment_product": "Product",
+    "treatment_dose": "Dose",
+    "actions_to_do": "Actions to do",
+    "brood_pattern": "Brood pattern",
+    "brood_frames": "Frames of brood",
+    "stores_frames": "Frames of stores",
+    "bee_frames": "Frames covered with bees"
+  },
+  "status": {
+    "unknown": "Not mentioned",
+    "uncertain": "Needs checking",
+    "system_derived": "Heard",
+    "confirmed": "Confirmed by you"
+  },
+  "flag_reason": {
+    "low_confidence": "Not heard clearly",
+    "unmappable": "Didn't fit any of the usual answers",
+    "unclear_correction": "You corrected yourself and the correction wasn't clear",
+    "multiple_hives": "The recording seems to cover more than one hive",
+    "no_matching_hive": "No hive with that name yet",
+    "other_language": "Said in the other language",
+    "unknown_term": "Contains a word the app doesn't know",
+    "date_conflict": "The date you said is far from the recording date",
+    "approximate_count": "Number given approximately",
+    "implausible_count": "Implausible number of frames",
+    "count_contradiction": "The frame count contradicts what was said elsewhere"
+  },
+  "language": {
+    "fr": "French",
+    "en": "English"
+  },
+  "ui": {
+    "app": {
+      "title": "Melliscribe"
+    },
+    "nav": {
+      "capture": "Dictate",
+      "review": "Records",
+      "pending": "Waiting",
+      "settings": "Settings"
+    },
+    "capture": {
+      "start": "Start dictating",
+      "stop": "Finish",
+      "recording": "Recording… {seconds} s",
+      "saved": "Recording safely stored on this phone.",
+      "save_failed": "The recording could not be stored on this phone. Try again.",
+      "language_active": "Dictation language: {language}",
+      "mic_denied": "The app has no access to the microphone. Allow it in the browser settings.",
+      "pending_count": "{count} recording(s) waiting to be sent",
+      "rejected": "{count} recording(s) refused by the server, kept on this phone",
+      "storage_warning": "Phone storage is almost full ({percent}%). Go online to send the waiting recordings.",
+      "import": "Import an audio file",
+      "import_saved": "File safely stored on this phone; it will be sent.",
+      "expiring": "The audio of {count} recording(s) will be deleted within {days} days.",
+      "expiring_attention": "Careful: {count} of these still have fields to check. Review them before the audio is gone."
+    },
+    "review": {
+      "empty": "No records yet.",
+      "open": "Open",
+      "back": "Back",
+      "confirm_record": "Confirm the record",
+      "confirmed": "Record confirmed",
+      "unconfirmed": "To review",
+      "open_flags": "{count} field(s) to check",
+      "edit": "Correct",
+      "accept": "That's right",
+      "save": "Save",
+      "cancel": "Cancel",
+      "not_observed": "Not observed",
+      "proposal": "Suggested: {value}",
+      "heard_as": "Heard: “{phrase}”",
+      "captured_on": "Recorded on {date}",
+      "language_mismatch": "This recording sounds like {detected}, but your dictation language is {language}.",
+      "reprocess_in": "Re-process in {language}",
+      "reprocess_started": "Re-processing started. Your confirmed fields will be kept.",
+      "reprocess_failed": "The last re-processing did not work; the previous record has been kept.",
+      "hive_unresolved": "Which hive?",
+      "hive_create": "Create hive “{identifier}”",
+      "hive_new_name": "Name of the new hive",
+      "hive_pick": "Choose this hive",
+      "transcript": "Transcript",
+      "play": "Play this passage",
+      "audio_gone": "Audio recording no longer kept",
+      "action_text": "Action to do",
+      "add_action": "Add an action",
+      "add_treatment": "Add a treatment",
+      "remove": "Remove",
+      "delete_audio": "Delete the audio now",
+      "delete_audio_confirm": "Permanently delete the audio? The record and transcript are kept.",
+      "eval_consent": "Allow this recording to be used to improve Melliscribe",
+      "eval_consent_given": "Allowed on {date}",
+      "frames": "{count} frames",
+      "count_less": "− ½ frame",
+      "count_more": "+ ½ frame"
+    },
+    "pending": {
+      "empty": "Nothing waiting.",
+      "state": {
+        "pending_upload": "Waiting to be sent",
+        "uploaded": "Received, queued",
+        "transcribing": "Transcribing",
+        "extracting": "Analysing",
+        "processed": "Processed",
+        "no_inspection": "No inspection recognised",
+        "failed": "Failed"
+      },
+      "retry": "Retry",
+      "failed_at": "Failed at: {stage}",
+      "stage": {
+        "transcription": "transcription",
+        "extraction": "analysis"
+      },
+      "no_inspection_help": "The recording is kept, but it contains no inspection."
+    },
+    "settings": {
+      "language": "Dictation and display language",
+      "retention_days": "How long audio is kept (days)",
+      "retention_help": "Records and transcripts are always kept; only the audio is deleted after this period.",
+      "saved": "Settings saved.",
+      "offline": "Offline: the language is stored on this phone and will be synchronised."
+    },
+    "error": {
+      "network": "No network right now — try again later."
+    }
+  }
+}

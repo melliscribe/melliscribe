@@ -1,0 +1,40 @@
+target-version = "py313"
+line-length = 88
+extend-exclude = ["src/melliscribe/db/migrations/versions"]
+
+[lint]
+select = ["ALL"]
+ignore = [
+    # Formatter conflicts.
+    "COM812",
+    "ISC001",
+    # Docstring requirements follow the Google convention below.
+    "D105",
+    "D107",
+    # Too noisy for a small codebase with explicit TODO discipline.
+    "FIX002",
+    "TD003",
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "D", "PLR2004", "ANN", "INP001", "FBT", "ARG", "EM", "TRY003", "PLR0913", "PLC0415"]
+"src/melliscribe/cli/**" = ["T201"]
+# FastAPI signatures: one parameter per query/form field, error codes not messages.
+"src/melliscribe/api/**" = ["EM101", "PLR0913", "PLR0917", "FBT001"]
+"src/melliscribe/db/repository.py" = ["EM101"]
+
+[lint.isort]
+force-single-line = true
+required-imports = ["from __future__ import annotations"]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "melliscribe.models.base.Model",
+    "sqlalchemy.orm.DeclarativeBase",
+    "melliscribe.db.tables.Base",
+]
+runtime-evaluated-decorators = ["fastapi.APIRouter.get", "fastapi.APIRouter.post", "fastapi.APIRouter.patch", "fastapi.APIRouter.delete"]
