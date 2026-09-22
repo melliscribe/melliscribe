@@ -1,0 +1,152 @@
+{
+  "vocabulary": {
+    "queen_seen": {
+      "seen": "Reine vue",
+      "not_seen": "Reine non vue",
+      "not_looked_for": "Reine non cherchée"
+    },
+    "brood": {
+      "all_stages": "Œufs, larves et couvain operculé",
+      "no_eggs": "Pas d'œufs",
+      "no_brood": "Pas de couvain",
+      "patchy": "Couvain en mosaïque",
+      "drone_brood_only": "Couvain mâle uniquement"
+    },
+    "stores": {
+      "plentiful": "Abondantes",
+      "adequate": "Suffisantes",
+      "low": "Faibles",
+      "none": "Aucune"
+    },
+    "temperament": {
+      "calm": "Calme",
+      "nervous": "Nerveuse",
+      "defensive": "Défensive",
+      "aggressive": "Agressive"
+    }
+  },
+  "field": {
+    "hive": "Ruche",
+    "inspection_date": "Date de la visite",
+    "queen_seen": "Reine",
+    "brood": "Couvain",
+    "stores": "Réserves",
+    "temperament": "Comportement",
+    "treatments": "Traitements",
+    "treatment_product": "Produit",
+    "treatment_dose": "Dose",
+    "actions_to_do": "À faire"
+  },
+  "status": {
+    "unknown": "Non mentionné",
+    "uncertain": "À vérifier",
+    "system_derived": "Entendu",
+    "confirmed": "Confirmé par vous"
+  },
+  "flag_reason": {
+    "low_confidence": "Mal entendu",
+    "unmappable": "Ne correspond à aucune réponse habituelle",
+    "unclear_correction": "Vous vous êtes corrigé, mais la correction n'est pas claire",
+    "multiple_hives": "L'enregistrement semble concerner plusieurs ruches",
+    "no_matching_hive": "Aucune ruche ne porte encore ce nom",
+    "other_language": "Dit dans l'autre langue",
+    "unknown_term": "Contient un mot que l'application ne connaît pas",
+    "date_conflict": "La date dite est éloignée de la date de l'enregistrement"
+  },
+  "language": {
+    "fr": "Français",
+    "en": "Anglais"
+  },
+  "ui": {
+    "app": {
+      "title": "Melliscribe"
+    },
+    "nav": {
+      "capture": "Dicter",
+      "review": "Fiches",
+      "pending": "En attente",
+      "settings": "Réglages"
+    },
+    "capture": {
+      "start": "Commencer la dictée",
+      "stop": "Terminer",
+      "recording": "Enregistrement en cours… {seconds} s",
+      "saved": "Enregistrement en sécurité sur ce téléphone.",
+      "save_failed": "L'enregistrement n'a pas pu être stocké sur ce téléphone. Réessayez.",
+      "language_active": "Langue de dictée : {language}",
+      "mic_denied": "L'application n'a pas accès au micro. Autorisez-le dans les réglages du navigateur.",
+      "pending_count": "{count} enregistrement(s) en attente d'envoi",
+      "rejected": "{count} enregistrement(s) refusé(s) par le serveur, conservé(s) sur ce téléphone",
+      "storage_warning": "Le stockage du téléphone est presque plein ({percent} %). Connectez-vous pour envoyer les enregistrements en attente.",
+      "import": "Importer un fichier audio",
+      "import_saved": "Fichier en sécurité sur ce téléphone, il sera envoyé.",
+      "expiring": "L'audio de {count} enregistrement(s) sera supprimé d'ici {days} jours.",
+      "expiring_attention": "Attention : {count} de ces enregistrements ont encore des champs à vérifier. Relisez-les avant que l'audio ne disparaisse."
+    },
+    "review": {
+      "empty": "Aucune fiche pour l'instant.",
+      "open": "Ouvrir",
+      "back": "Retour",
+      "confirm_record": "Confirmer la fiche",
+      "confirmed": "Fiche confirmée",
+      "unconfirmed": "À relire",
+      "open_flags": "{count} champ(s) à vérifier",
+      "edit": "Corriger",
+      "accept": "C'est juste",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "not_observed": "Non observé",
+      "proposal": "Proposition : {value}",
+      "heard_as": "Entendu : « {phrase} »",
+      "captured_on": "Enregistré le {date}",
+      "language_mismatch": "Cet enregistrement semble être en {detected}, alors que votre langue de dictée est {language}.",
+      "reprocess_in": "Retraiter en {language}",
+      "reprocess_started": "Retraitement lancé. Vos champs confirmés seront conservés.",
+      "reprocess_failed": "Le dernier retraitement n'a pas abouti ; la fiche précédente est conservée.",
+      "hive_unresolved": "Quelle ruche ?",
+      "hive_create": "Créer la ruche « {identifier} »",
+      "hive_new_name": "Nom de la nouvelle ruche",
+      "hive_pick": "Choisir cette ruche",
+      "transcript": "Transcription",
+      "play": "Écouter ce passage",
+      "audio_gone": "Enregistrement audio plus conservé",
+      "action_text": "Action à faire",
+      "add_action": "Ajouter une action",
+      "add_treatment": "Ajouter un traitement",
+      "remove": "Retirer",
+      "delete_audio": "Supprimer l'audio maintenant",
+      "delete_audio_confirm": "Supprimer définitivement l'audio ? La fiche et la transcription sont conservées.",
+      "eval_consent": "Autoriser l'utilisation de cet enregistrement pour améliorer Melliscribe",
+      "eval_consent_given": "Autorisé le {date}"
+    },
+    "pending": {
+      "empty": "Rien en attente.",
+      "state": {
+        "pending_upload": "En attente d'envoi",
+        "uploaded": "Reçu, en file d'attente",
+        "transcribing": "Transcription en cours",
+        "extracting": "Analyse en cours",
+        "processed": "Traité",
+        "no_inspection": "Aucune visite reconnue",
+        "failed": "Échec"
+      },
+      "retry": "Réessayer",
+      "failed_at": "Échec à l'étape : {stage}",
+      "stage": {
+        "transcription": "transcription",
+        "extraction": "analyse"
+      },
+      "no_inspection_help": "L'enregistrement est conservé, mais il ne contient pas de visite."
+    },
+    "settings": {
+      "language": "Langue de dictée et d'affichage",
+      "retention_days": "Durée de conservation de l'audio (jours)",
+      "retention_help": "Les fiches et transcriptions sont toujours conservées ; seul l'audio est supprimé après ce délai.",
+      "saved": "Réglages enregistrés.",
+      "offline": "Hors ligne : la langue est enregistrée sur ce téléphone et sera synchronisée."
+    },
+    "error": {
+      "network": "Pas de réseau pour l'instant — réessayez plus tard."
+    }
+  }
+}

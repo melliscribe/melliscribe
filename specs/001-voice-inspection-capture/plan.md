@@ -172,3 +172,30 @@ detection, and CI regenerates it to prove it matches the current schema.
 No other deviations. The two-stage pipeline is not added complexity — it is
 forced by Claude having no audio input, and each stage is separately evaluable,
 which the merged alternative would not be.
+
+## Implementation Notes
+
+Divergences from this plan, written back per the constitution's workflow rule.
+
+- **Eval harness location**: `backend/src/melliscribe/evals/` rather than
+  `backend/evals/harness/`, so the packaged `melliscribe eval` command can
+  import it. Datasets and baselines stay in `backend/evals/`.
+- **Structured outputs**: the JSON Schema passed as `output_config.format` is
+  `anthropic.transform_schema(ExtractionOutput)` — generated from Pydantic, with
+  the SDK moving unsupported constraints into descriptions.
+- **Extraction output vs record**: Claude returns an `ExtractionOutput` (what
+  was heard, with confidences); statuses, the threshold, hive matching and
+  dates are applied in `domain/inspection/`, so they are versioned and tested
+  independently of the model.
+- **Refusal fallback**: live extraction sends `fallbacks: "default"` (beta
+  `server-side-fallback-2026-07-01`); the serving model is recorded in
+  provenance and a fallback sets `fallback_taken` on the trace. Batches do not
+  support it.
+- **Batch deadline**: most batches finish within an hour, which D4's claim
+  that batch "comfortably meets" SC-007 does not account for. Batch extraction
+  therefore has a 4-minute deadline, after which it is cancelled and the
+  remainder extracted live, traced as a fallback.
+- **Time zones**: timestamps are stored in UTC and read back timezone-aware on
+  both SQLite and PostgreSQL; the capture day is the device's local day.
+- **Background Sync** is not wired: the foreground retry is the guarantee
+  (ADR-0004), and nothing yet needs the optimisation.

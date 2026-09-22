@@ -1,0 +1,17 @@
+{
+  "error": {
+    "validation_error": "Some of the information sent is not valid.",
+    "unsupported_audio_format": "This audio format ({audio_format}) is not supported. Your recording has been kept on your phone.",
+    "audio_too_large": "This recording is too large to send.",
+    "storage_unavailable": "The recording could not be stored safely. It is still on your phone and will be sent again.",
+    "duplicate_hive": "You already have a hive called \"{identifier}\".",
+    "hive_not_found": "This hive does not exist.",
+    "recording_not_found": "This recording does not exist.",
+    "record_not_found": "This inspection record does not exist.",
+    "record_changed": "This record changed while you were editing it. Reload it and try again.",
+    "record_has_open_flags": "Some fields still need checking before the record can be confirmed.",
+    "audio_gone": "This recording is no longer kept.",
+    "not_retryable": "This recording is not waiting for a retry.",
+    "hive_choice_required": "Choose an existing hive or give a name for a new one."
+  }
+}

@@ -1,0 +1,38 @@
+# Copyright (C) 2026 Jean-Christophe Giret
+# SPDX-License-Identifier: AGPL-3.0-or-later
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.5
+    hooks:
+      - id: insert-license
+        name: license header (python)
+        files: ^backend/.*\.py$
+        exclude: ^backend/src/melliscribe/db/migrations/versions/
+        args: ["--license-filepath", "LICENSE_HEADER.txt", "--comment-style", "#"]
+      - id: insert-license
+        name: license header (typescript)
+        files: ^frontend/(src|tests)/.*\.(ts|tsx)$
+        exclude: ^frontend/src/api/generated/
+        args: ["--license-filepath", "LICENSE_HEADER.txt", "--comment-style", "//"]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff-check
+        args: ["--config", "backend/.ruff.toml"]
+        files: ^backend/
+      - id: ruff-format
+        args: ["--config", "backend/.ruff.toml"]
+        files: ^backend/
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.3
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

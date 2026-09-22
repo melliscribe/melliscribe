@@ -10,69 +10,69 @@
 
 ## Requirement Completeness — Extraction
 
-- [ ] CHK001 Is the rule that a spoken self-correction supersedes the earlier statement stated as a requirement, rather than only as an extraction-prompt instruction? [Conflict, Contracts §Extraction rule 7 vs Spec §FR-006]
-- [ ] CHK002 Is the outcome for a dictation covering several hives specified as a requirement, beyond being listed as an edge case? [Gap, Spec §Edge Cases, Contracts §Extraction rule 8]
-- [ ] CHK003 Are requirements defined for what a field's verbatim phrase should be when its value is derived from several non-contiguous parts of the dictation? [Gap, Spec §FR-006b]
-- [ ] CHK004 Is it specified whether the per-field confidence value is surfaced to the beekeeper or used only internally to set status? [Gap, Data Model §ObservationField]
-- [ ] CHK005 Are requirements defined for the outcome when re-processing after a language correction fails, including whether it is retried and how the prior record is treated? [Gap, Spec §FR-026b]
-- [ ] CHK006 Are requirements defined for what happens to existing records when a controlled vocabulary changes after records already use it? [Gap, Spec §Assumptions "Vocabularies are a deliverable"]
-- [ ] CHK007 Is the requirement that display labels must exist in both languages for every vocabulary value stated in the spec, or does it exist only in the data model? [Traceability, Data Model §Controlled vocabularies vs Spec §FR-006c]
+- [x] CHK001 Is the rule that a spoken self-correction supersedes the earlier statement stated as a requirement, rather than only as an extraction-prompt instruction? [Conflict, Contracts §Extraction rule 7 vs Spec §FR-006]
+- [x] CHK002 Is the outcome for a dictation covering several hives specified as a requirement, beyond being listed as an edge case? [Gap, Spec §Edge Cases, Contracts §Extraction rule 8]
+- [x] CHK003 Are requirements defined for what a field's verbatim phrase should be when its value is derived from several non-contiguous parts of the dictation? [Gap, Spec §FR-006b]
+- [x] CHK004 Is it specified whether the per-field confidence value is surfaced to the beekeeper or used only internally to set status? [Gap, Data Model §ObservationField]
+- [x] CHK005 Are requirements defined for the outcome when re-processing after a language correction fails, including whether it is retried and how the prior record is treated? [Gap, Spec §FR-026b]
+- [x] CHK006 Are requirements defined for what happens to existing records when a controlled vocabulary changes after records already use it? [Gap, Spec §Assumptions "Vocabularies are a deliverable"]
+- [x] CHK007 Is the requirement that display labels must exist in both languages for every vocabulary value stated in the spec, or does it exist only in the data model? [Traceability, Data Model §Controlled vocabularies vs Spec §FR-006c]
 
 ## Requirement Clarity — Thresholds and Vague Terms
 
-- [ ] CHK008 Is "low confidence" quantified with a specific threshold, or left to implementation judgement? [Ambiguity, Spec §FR-008]
-- [ ] CHK009 Is "extraction quality" in the French/English parity criterion defined as a specific, named metric? [Clarity, Spec §SC-005]
-- [ ] CHK010 Is "field accuracy" defined — specifically, whether a field counts as correct on the coded value alone, or on value plus status plus verbatim phrase? [Ambiguity, Spec §SC-005]
-- [ ] CHK011 For an unmappable observation, is it specified whether the field carries a best-guess value or no value at all? The requirement currently permits both. [Ambiguity, Spec §FR-006d, Data Model §FieldStatus]
-- [ ] CHK012 Is "the accuracy threshold set in SC-005" a valid reference, given that SC-005 states field accuracy parity rather than a glossary-term threshold? [Conflict, Spec §FR-014 → §SC-005]
-- [ ] CHK013 Is it specified whether the zero-tolerance rule on unmentioned fields applies only to the evaluation set, or also to production behaviour? [Clarity, Spec §SC-004]
-- [ ] CHK014 Is "of the fields a beekeeper has to correct" defined with enough precision to be computed — over what population, what window, and counting corrections or fields? [Measurability, Spec §SC-003]
+- [x] CHK008 Is "low confidence" quantified with a specific threshold, or left to implementation judgement? [Ambiguity, Spec §FR-008]
+- [x] CHK009 Is "extraction quality" in the French/English parity criterion defined as a specific, named metric? [Clarity, Spec §SC-005]
+- [x] CHK010 Is "field accuracy" defined — specifically, whether a field counts as correct on the coded value alone, or on value plus status plus verbatim phrase? [Ambiguity, Spec §SC-005]
+- [x] CHK011 For an unmappable observation, is it specified whether the field carries a best-guess value or no value at all? The requirement currently permits both. [Ambiguity, Spec §FR-006d, Data Model §FieldStatus]
+- [x] CHK012 Is "the accuracy threshold set in SC-005" a valid reference, given that SC-005 states field accuracy parity rather than a glossary-term threshold? [Conflict, Spec §FR-014 → §SC-005]
+- [x] CHK013 Is it specified whether the zero-tolerance rule on unmentioned fields applies only to the evaluation set, or also to production behaviour? [Clarity, Spec §SC-004]
+- [x] CHK014 Is "of the fields a beekeeper has to correct" defined with enough precision to be computed — over what population, what window, and counting corrections or fields? [Measurability, Spec §SC-003]
 
 ## Controlled Vocabulary Requirements
 
-- [ ] CHK015 Are the actual members of each controlled vocabulary specified anywhere, or deferred entirely to implementation? [Gap, Spec §FR-006a, Data Model §Controlled vocabularies]
-- [ ] CHK016 Are the criteria for deciding vocabulary membership documented — what makes a candidate value belong or not? [Gap, Spec §Assumptions]
-- [ ] CHK017 Is it specified which fields have a controlled vocabulary and which do not, beyond actions-to-do being called out as free text? [Completeness, Spec §FR-006a]
-- [ ] CHK018 Are requirements defined for treatment product and dose, given they are described as never inferred but also not enumerable as a vocabulary? [Clarity, Spec §Key Entities "Treatment", Data Model §Treatment]
-- [ ] CHK019 Is a vocabulary versioning requirement stated, given that provenance records a vocabulary version? [Traceability, Data Model §Provenance vs Spec §FR-011]
-- [ ] CHK020 Is it specified whether vocabulary values are ordinal — whether "nervous" sits between "calm" and "defensive" for comparison and trend purposes? [Gap, Spec §FR-006a]
+- [x] CHK015 Are the actual members of each controlled vocabulary specified anywhere, or deferred entirely to implementation? [Gap, Spec §FR-006a, Data Model §Controlled vocabularies]
+- [x] CHK016 Are the criteria for deciding vocabulary membership documented — what makes a candidate value belong or not? [Gap, Spec §Assumptions]
+- [x] CHK017 Is it specified which fields have a controlled vocabulary and which do not, beyond actions-to-do being called out as free text? [Completeness, Spec §FR-006a]
+- [x] CHK018 Are requirements defined for treatment product and dose, given they are described as never inferred but also not enumerable as a vocabulary? [Clarity, Spec §Key Entities "Treatment", Data Model §Treatment]
+- [x] CHK019 Is a vocabulary versioning requirement stated, given that provenance records a vocabulary version? [Traceability, Data Model §Provenance vs Spec §FR-011]
+- [x] CHK020 Is it specified whether vocabulary values are ordinal — whether "nervous" sits between "calm" and "defensive" for comparison and trend purposes? [Gap, Spec §FR-006a]
 
 ## Bilingual Requirement Coverage
 
-- [ ] CHK021 Are requirements defined for the outcome of a dictation that mixes French and English, beyond it being listed as an edge case? [Gap, Spec §Edge Cases]
-- [ ] CHK022 Is the bilingual beekeeping glossary's ownership, source and update process specified as a requirement? [Gap, Spec §FR-014]
-- [ ] CHK023 Are requirements defined for what happens at runtime when a domain term is absent from the glossary? [Gap, Spec §FR-014]
-- [ ] CHK024 Is the scope of "every user-facing string" explicit about whether it includes API error messages, validation messages, and CLI output? [Clarity, Spec §FR-025, Contracts §api.md Error shape]
-- [ ] CHK025 Are requirements defined for how a beekeeper discovers that their account language is set wrongly, before they record a whole dictation against it? [Gap, Spec §Edge Cases, §FR-026]
-- [ ] CHK026 Is it specified whether the detected language of a transcript is shown to the beekeeper, given the data model records it but the account setting governs? [Ambiguity, Data Model §Transcript]
-- [ ] CHK027 Are requirements defined for locale-aware formatting of dates, numbers and units within the record review flow specifically, or only as a general constitutional obligation? [Coverage, Constitution §VIII]
+- [x] CHK021 Are requirements defined for the outcome of a dictation that mixes French and English, beyond it being listed as an edge case? [Gap, Spec §Edge Cases]
+- [x] CHK022 Is the bilingual beekeeping glossary's ownership, source and update process specified as a requirement? [Gap, Spec §FR-014]
+- [x] CHK023 Are requirements defined for what happens at runtime when a domain term is absent from the glossary? [Gap, Spec §FR-014]
+- [x] CHK024 Is the scope of "every user-facing string" explicit about whether it includes API error messages, validation messages, and CLI output? [Clarity, Spec §FR-025, Contracts §api.md Error shape]
+- [x] CHK025 Are requirements defined for how a beekeeper discovers that their account language is set wrongly, before they record a whole dictation against it? [Gap, Spec §Edge Cases, §FR-026]
+- [x] CHK026 Is it specified whether the detected language of a transcript is shown to the beekeeper, given the data model records it but the account setting governs? [Ambiguity, Data Model §Transcript]
+- [x] CHK027 Are requirements defined for locale-aware formatting of dates, numbers and units within the record review flow specifically, or only as a general constitutional obligation? [Coverage, Constitution §VIII]
 
 ## Evaluation and Measurability
 
-- [ ] CHK028 Are requirements defined for the minimum size and composition of the evaluation set, such that the 5-point parity claim is meaningful rather than noise? [Gap, Spec §SC-005, Research §D10]
-- [ ] CHK029 Is it specified how paired French/English recordings of the same inspection are obtained, given that coded-value agreement across languages is a stated eval check? [Gap, Contracts §extraction.md "What the eval measures"]
-- [ ] CHK030 Are baseline values recorded or required for the metrics whose gate is "regressions block", so that a regression is detectable? [Measurability, Contracts §extraction.md]
-- [ ] CHK031 Is it specified whether the two pipeline stages have separate evaluation criteria and separate pass/fail gates, or share one? [Clarity, Research §D10, Contracts §extraction.md]
-- [ ] CHK032 Are requirements defined for how a failure is attributed between transcription and extraction when the final record is wrong? [Gap, Research §D1]
-- [ ] CHK033 Is the requirement that evaluation data comes only from consented or purpose-made recordings stated in a way that can be audited? [Measurability, Spec §FR-027f]
+- [x] CHK028 Are requirements defined for the minimum size and composition of the evaluation set, such that the 5-point parity claim is meaningful rather than noise? [Gap, Spec §SC-005, Research §D10]
+- [x] CHK029 Is it specified how paired French/English recordings of the same inspection are obtained, given that coded-value agreement across languages is a stated eval check? [Gap, Contracts §extraction.md "What the eval measures"]
+- [x] CHK030 Are baseline values recorded or required for the metrics whose gate is "regressions block", so that a regression is detectable? [Measurability, Contracts §extraction.md]
+- [x] CHK031 Is it specified whether the two pipeline stages have separate evaluation criteria and separate pass/fail gates, or share one? [Clarity, Research §D10, Contracts §extraction.md]
+- [x] CHK032 Are requirements defined for how a failure is attributed between transcription and extraction when the final record is wrong? [Gap, Research §D1]
+- [x] CHK033 Is the requirement that evaluation data comes only from consented or purpose-made recordings stated in a way that can be audited? [Measurability, Spec §FR-027f]
 
 ## Scenario and Edge Case Coverage
 
-- [ ] CHK034 Are requirements defined for a record where every field is flagged — whether it is presented differently from a partially-flagged one? [Gap, Spec §Edge Cases]
-- [ ] CHK035 Are requirements defined for a dictation that is intelligible but contains no inspection content at all? [Coverage, Gap]
-- [ ] CHK036 Are requirements specified for a spoken date that conflicts with the recording's capture date, beyond the default-and-override rule? [Coverage, Spec §FR-016, §Edge Cases]
-- [ ] CHK037 Are requirements defined for the behaviour when the transcript is produced successfully but extraction fails, given the two stages fail independently? [Gap, Research §D1, Data Model §RecordingState]
+- [x] CHK034 Are requirements defined for a record where every field is flagged — whether it is presented differently from a partially-flagged one? [Gap, Spec §Edge Cases]
+- [x] CHK035 Are requirements defined for a dictation that is intelligible but contains no inspection content at all? [Coverage, Gap]
+- [x] CHK036 Are requirements specified for a spoken date that conflicts with the recording's capture date, beyond the default-and-override rule? [Coverage, Spec §FR-016, §Edge Cases]
+- [x] CHK037 Are requirements defined for the behaviour when the transcript is produced successfully but extraction fails, given the two stages fail independently? [Gap, Research §D1, Data Model §RecordingState]
 
 ## Consistency and Cross-Artifact Conflicts
 
-- [ ] CHK038 Do the extraction rules in the contract introduce obligations absent from the spec's functional requirements, and if so is the contract or the spec authoritative? [Conflict, Contracts §extraction.md vs Spec §Requirements]
-- [ ] CHK039 Is the prompt-cache ordering requirement traceable to a stated requirement or principle, rather than resting only on a research decision? [Traceability, Research §D5, Contracts §extraction.md]
-- [ ] CHK040 Are the flag-don't-guess rules stated consistently across the spec, the data model invariants and the extraction contract, without one being stricter than another? [Consistency, Spec §FR-007, Data Model §FieldStatus, Contracts §extraction.md]
+- [x] CHK038 Do the extraction rules in the contract introduce obligations absent from the spec's functional requirements, and if so is the contract or the spec authoritative? [Conflict, Contracts §extraction.md vs Spec §Requirements]
+- [x] CHK039 Is the prompt-cache ordering requirement traceable to a stated requirement or principle, rather than resting only on a research decision? [Traceability, Research §D5, Contracts §extraction.md]
+- [x] CHK040 Are the flag-don't-guess rules stated consistently across the spec, the data model invariants and the extraction contract, without one being stricter than another? [Consistency, Spec §FR-007, Data Model §FieldStatus, Contracts §extraction.md]
 
 ## Dependencies and Assumptions
 
-- [ ] CHK041 Is the assumption that a single ASR backend can serve both languages at parity recorded as an assumption that ADR-0002 must validate? [Assumption, Research §D2]
-- [ ] CHK042 Is the dependency on segment-level timestamps stated as a requirement rather than only as an ADR selection criterion, given that a whole user story depends on it? [Traceability, Research §D2, Spec §FR-023]
+- [x] CHK041 Is the assumption that a single ASR backend can serve both languages at parity recorded as an assumption that ADR-0002 must validate? [Assumption, Research §D2]
+- [x] CHK042 Is the dependency on segment-level timestamps stated as a requirement rather than only as an ADR selection criterion, given that a whole user story depends on it? [Traceability, Research §D2, Spec §FR-023]
 - [ ] CHK043 Is the assumption that extraction cost per record is dominated by the cached prefix validated or marked as needing measurement? [Assumption, Research §D3, §D5]
 
 ## Assisted Review Pass — 2026-09-21

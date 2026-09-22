@@ -17,9 +17,18 @@ being restated here.
 
 ```bash
 uv sync --project backend
-uv run --project backend alembic upgrade head
+(cd backend && uv run alembic upgrade head)   # MELLISCRIBE_DATABASE_URL, or local SQLite
 npm --prefix frontend ci
+uv run --project backend melliscribe openapi --output backend/openapi.json
 npm --prefix frontend run generate:api    # OpenAPI -> TypeScript
+```
+
+Run it:
+
+```bash
+uv run --project backend uvicorn --factory melliscribe.api.app:create_app --port 8000
+uv run --project backend melliscribe worker     # drains the queue; batches a backlog
+npm --prefix frontend run dev                   # proxies /api to :8000
 ```
 
 `generate:api` must produce no diff against the committed types. A diff means
@@ -140,10 +149,27 @@ uv run --project backend ty check
 uv run --project backend pytest
 npm --prefix frontend run generate:api && git diff --exit-code frontend/src/api/generated
 uv run --project backend melliscribe vocabulary check
-uv run --project backend melliscribe eval run --dataset datasets/ci.jsonl
+uv run --project backend melliscribe eval run --dataset datasets/smoke.jsonl
 ```
 
 The last three are this feature's additions: generated-type drift (Principle
 IV), translation completeness (Principle VIII), and the eval gate (Principle
 II). Any change to a prompt, model, vocabulary or extraction schema requires the
 eval result in the pull request description.
+
+## Walk-through results — 2026-09-22 (T128)
+
+Recorded at the end of `/speckit-implement`. "Automated" means a test in the
+suite exercises the scenario end to end with fake pipeline stages.
+
+| Scenario | Result |
+|---|---|
+| 1 — Pipeline without the app | **Blocked**: `melliscribe pipeline` fails at transcription with an attributed error until ADR-0002 picks a provider. `melliscribe extract` works on a transcript file given `ANTHROPIC_API_KEY`. |
+| 2 — Offline capture | **Pass** (Playwright, Chromium with a fake microphone, network off): confirmation shown only after the IndexedDB write; queue holds the recording. Server side: 201/200 only after a durable write (automated). |
+| 3 — Gloved review | **Not run** — needs beekeepers outdoors (SC-006, T125). |
+| 4 — Bilingual parity | **Blocked** on the full paired dataset (T093) and an API key. The parity and SC-011 checks are implemented and unit-tested. No language choice at recording time: **pass** (Playwright). |
+| 5 — Deferred processing | **Pass** (automated): one record per recording, keyed by `custom_id`, results in any order, duplicate upload gives one record, failed recording retried without re-recording. |
+| 6 — Playback | **Pass** server side (automated range requests and segment references); the in-browser playback control is untested. |
+| 7 — Retention | **Pass** (automated): delete gives 204, record and transcript intact, 410 afterwards; `retention due/apply --dry-run` tested. |
+| 8 — Wrong language corrected | **Pass** (automated): re-transcribed in the new language, confirmed fields preserved, a failed re-process leaves the previous record. |
+| 9 — Observability | **Pass**: `melliscribe trace summary` against a live server shows the traced transcription failure. Non-zero `cache_read_tokens` needs an API key (T129). |

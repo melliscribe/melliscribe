@@ -1,0 +1,2538 @@
+{
+  "components": {
+    "schemas": {
+      "AccountSettings": {
+        "additionalProperties": false,
+        "description": "The beekeeper's settings.\n\nAttributes:\n    language: Applies to every recording; never inferred from the network\n        (FR-026).\n    audio_retention_days: How long original audio is kept (FR-027a).",
+        "properties": {
+          "audio_retention_days": {
+            "default": 365,
+            "maximum": 3650.0,
+            "minimum": 1.0,
+            "title": "Audio Retention Days",
+            "type": "integer"
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "default": "fr"
+          }
+        },
+        "title": "AccountSettings",
+        "type": "object"
+      },
+      "AccountSettingsUpdate": {
+        "additionalProperties": false,
+        "description": "A partial update of the settings.",
+        "properties": {
+          "audio_retention_days": {
+            "anyOf": [
+              {
+                "maximum": 3650.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Retention Days"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "AccountSettingsUpdate",
+        "type": "object"
+      },
+      "ActionToDo": {
+        "additionalProperties": false,
+        "description": "Something to come back and do, as phrased. Free text by design.",
+        "properties": {
+          "text": {
+            "$ref": "#/components/schemas/ObservationField_str_"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "ActionToDo",
+        "type": "object"
+      },
+      "Body_upload_recording_recordings_post": {
+        "properties": {
+          "audio": {
+            "contentMediaType": "application/octet-stream",
+            "title": "Audio",
+            "type": "string"
+          },
+          "audio_format": {
+            "title": "Audio Format",
+            "type": "string"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "duration_seconds": {
+            "minimum": 0.0,
+            "title": "Duration Seconds",
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language"
+          }
+        },
+        "required": [
+          "id",
+          "captured_at",
+          "duration_seconds",
+          "language",
+          "audio_format",
+          "audio"
+        ],
+        "title": "Body_upload_recording_recordings_post",
+        "type": "object"
+      },
+      "BroodState": {
+        "description": "What the brood nest showed.",
+        "enum": [
+          "all_stages",
+          "no_eggs",
+          "no_brood",
+          "patchy",
+          "drone_brood_only"
+        ],
+        "title": "BroodState",
+        "type": "string"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "description": "The error body every endpoint returns.\n\nAttributes:\n    code: A stable, machine-readable code.\n    message: The explanation, in the account language.\n    details: Optional structured detail, such as validation locations.",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "EvalConsent": {
+        "additionalProperties": false,
+        "description": "The beekeeper's explicit, separate consent to evaluation use (FR-027f).",
+        "properties": {
+          "consented": {
+            "title": "Consented",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "consented"
+        ],
+        "title": "EvalConsent",
+        "type": "object"
+      },
+      "ExpiringRecording": {
+        "additionalProperties": false,
+        "description": "A recording whose audio will soon be deleted (FR-027e).\n\nAttributes:\n    recording_id: The recording.\n    expires_at: When its audio will be deleted.\n    needs_attention: The audio is still the evidence for unconfirmed or\n        flagged fields, or was never processed — warn louder.",
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "needs_attention": {
+            "title": "Needs Attention",
+            "type": "boolean"
+          },
+          "recording_id": {
+            "format": "uuid",
+            "title": "Recording Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recording_id",
+          "expires_at",
+          "needs_attention"
+        ],
+        "title": "ExpiringRecording",
+        "type": "object"
+      },
+      "FieldStatus": {
+        "description": "How far a field's value can be trusted — the beekeeper-facing signal.",
+        "enum": [
+          "unknown",
+          "uncertain",
+          "system_derived",
+          "confirmed"
+        ],
+        "title": "FieldStatus",
+        "type": "string"
+      },
+      "FlagReason": {
+        "description": "Why a field is `UNCERTAIN`, as a language-neutral code.\n\nThe reason is shown to the beekeeper through the i18n catalogues under\n`flag_reason.<value>`.",
+        "enum": [
+          "low_confidence",
+          "unmappable",
+          "unclear_correction",
+          "multiple_hives",
+          "no_matching_hive",
+          "other_language",
+          "unknown_term",
+          "date_conflict"
+        ],
+        "title": "FlagReason",
+        "type": "string"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Hive": {
+        "additionalProperties": false,
+        "description": "A hive. Never created by the system (FR-015c).\n\nAttributes:\n    id: Server-assigned identifier.\n    identifier: Unique among the beekeeper's hives (FR-015d).\n    created_at: When it was created.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "identifier": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "identifier",
+          "created_at"
+        ],
+        "title": "Hive",
+        "type": "object"
+      },
+      "HiveCreate": {
+        "additionalProperties": false,
+        "description": "A request to create a hive: an identifier and nothing else (FR-015a).",
+        "properties": {
+          "identifier": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Identifier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "identifier"
+        ],
+        "title": "HiveCreate",
+        "type": "object"
+      },
+      "Language": {
+        "description": "A supported language, as an ISO 639-1 code.",
+        "enum": [
+          "fr",
+          "en"
+        ],
+        "title": "Language",
+        "type": "string"
+      },
+      "ObservationField_BroodState_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroodState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroodState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[BroodState]",
+        "type": "object"
+      },
+      "ObservationField_QueenSeen_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QueenSeen"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QueenSeen"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[QueenSeen]",
+        "type": "object"
+      },
+      "ObservationField_StoresState_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StoresState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StoresState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[StoresState]",
+        "type": "object"
+      },
+      "ObservationField_Temperament_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Temperament"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Temperament"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[Temperament]",
+        "type": "object"
+      },
+      "ObservationField_UUID_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal"
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[UUID]",
+        "type": "object"
+      },
+      "ObservationField_date_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal"
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[date]",
+        "type": "object"
+      },
+      "ObservationField_str_": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "flag_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FlagReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal"
+          },
+          "segment_refs": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRef"
+            },
+            "title": "Segment Refs",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FieldStatus"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "verbatim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Verbatim",
+            "type": "array"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ObservationField[str]",
+        "type": "object"
+      },
+      "PipelineStage": {
+        "description": "A pipeline stage, used to attribute failures (FR-019b) and traces.",
+        "enum": [
+          "transcription",
+          "extraction"
+        ],
+        "title": "PipelineStage",
+        "type": "string"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "description": "The interpretation method and versions behind one record.\n\nAttributes:\n    transcription_provider: The ASR provider (ADR-0002).\n    transcription_model: The ASR model.\n    extraction_model: The model that actually served the extraction.\n    prompt_version: The extraction prompt file version.\n    vocabulary_version: The controlled vocabulary version.\n    extraction_schema_version: The extraction output schema version.\n    uncertainty_threshold: The confidence below which a field is flagged\n        (FR-008a).\n    extracted_at: When extraction ran.",
+        "properties": {
+          "extracted_at": {
+            "format": "date-time",
+            "title": "Extracted At",
+            "type": "string"
+          },
+          "extraction_model": {
+            "title": "Extraction Model",
+            "type": "string"
+          },
+          "extraction_schema_version": {
+            "title": "Extraction Schema Version",
+            "type": "string"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "transcription_model": {
+            "title": "Transcription Model",
+            "type": "string"
+          },
+          "transcription_provider": {
+            "title": "Transcription Provider",
+            "type": "string"
+          },
+          "uncertainty_threshold": {
+            "title": "Uncertainty Threshold",
+            "type": "number"
+          },
+          "vocabulary_version": {
+            "title": "Vocabulary Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "transcription_provider",
+          "transcription_model",
+          "extraction_model",
+          "prompt_version",
+          "vocabulary_version",
+          "extraction_schema_version",
+          "uncertainty_threshold",
+          "extracted_at"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "QueenSeen": {
+        "description": "Whether the queen herself was seen.",
+        "enum": [
+          "seen",
+          "not_seen",
+          "not_looked_for"
+        ],
+        "title": "QueenSeen",
+        "type": "string"
+      },
+      "RecordPatch": {
+        "additionalProperties": false,
+        "description": "A correction. Every field present becomes `CONFIRMED` (FR-010).\n\nSend a field with `null` to confirm that it was not observed. Omit a field\nto leave it untouched.",
+        "properties": {
+          "actions_to_do": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actions To Do"
+          },
+          "brood": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BroodState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "inspection_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inspection Date"
+          },
+          "queen_seen": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QueenSeen"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stores": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StoresState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "temperament": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Temperament"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "treatments": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TreatmentInput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Treatments"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "RecordPatch",
+        "type": "object"
+      },
+      "RecordView": {
+        "additionalProperties": false,
+        "description": "A record as the review screen needs it, in one call.\n\nAttributes:\n    version: For optimistic concurrency on PATCH.\n    audio_available: Whether playback can be offered (FR-027d).\n    transcript: The full transcript the record came from (FR-012).",
+        "properties": {
+          "actions_to_do": {
+            "items": {
+              "$ref": "#/components/schemas/ActionToDo"
+            },
+            "title": "Actions To Do",
+            "type": "array"
+          },
+          "audio_available": {
+            "title": "Audio Available",
+            "type": "boolean"
+          },
+          "brood": {
+            "$ref": "#/components/schemas/ObservationField_BroodState_"
+          },
+          "captured_on": {
+            "format": "date",
+            "title": "Captured On",
+            "type": "string"
+          },
+          "confirmed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed At"
+          },
+          "detected_language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hive": {
+            "$ref": "#/components/schemas/ObservationField_UUID_"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "inspection_date": {
+            "$ref": "#/components/schemas/ObservationField_date_"
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "queen_seen": {
+            "$ref": "#/components/schemas/ObservationField_QueenSeen_"
+          },
+          "recording_id": {
+            "format": "uuid",
+            "title": "Recording Id",
+            "type": "string"
+          },
+          "spoken_hive_identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spoken Hive Identifier"
+          },
+          "stores": {
+            "$ref": "#/components/schemas/ObservationField_StoresState_"
+          },
+          "temperament": {
+            "$ref": "#/components/schemas/ObservationField_Temperament_"
+          },
+          "transcript": {
+            "$ref": "#/components/schemas/Transcript"
+          },
+          "transcript_id": {
+            "format": "uuid",
+            "title": "Transcript Id",
+            "type": "string"
+          },
+          "treatments": {
+            "items": {
+              "$ref": "#/components/schemas/Treatment"
+            },
+            "title": "Treatments",
+            "type": "array"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "recording_id",
+          "transcript_id",
+          "language",
+          "captured_on",
+          "hive",
+          "inspection_date",
+          "queen_seen",
+          "brood",
+          "stores",
+          "temperament",
+          "provenance",
+          "version",
+          "audio_available",
+          "transcript"
+        ],
+        "title": "RecordView",
+        "type": "object"
+      },
+      "Recording": {
+        "additionalProperties": false,
+        "description": "A captured recording and its processing state.\n\nAttributes:\n    id: Client-generated at capture time; the upload idempotency key and\n        the batch `custom_id` (FR-020).\n    captured_at: When it was captured, on the device.\n    captured_on: The device's local calendar day at capture.\n    duration_seconds: Its length.\n    language: Copied from the account setting at capture (FR-026).\n    audio_format: The detected media type, never assumed (D9).\n    state: Where it is in the pipeline.\n    retention_expires_at: When the audio will be deleted; None once gone.\n    audio_available: False after deletion or expiry (FR-027d).\n    failure_reason: Why processing failed; never swallowed (FR-019).\n    failure_stage: Which stage failed (FR-019b).\n    reprocess_failed: True when the last re-processing did not take and\n        the previous record was kept (FR-019c).\n    eval_consent_at: When the beekeeper explicitly consented to this\n        recording being used for evaluation; None means no (FR-027f).",
+        "properties": {
+          "audio_available": {
+            "default": true,
+            "title": "Audio Available",
+            "type": "boolean"
+          },
+          "audio_format": {
+            "title": "Audio Format",
+            "type": "string"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "captured_on": {
+            "format": "date",
+            "title": "Captured On",
+            "type": "string"
+          },
+          "duration_seconds": {
+            "title": "Duration Seconds",
+            "type": "number"
+          },
+          "eval_consent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eval Consent At"
+          },
+          "failure_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Reason"
+          },
+          "failure_stage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PipelineStage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language"
+          },
+          "reprocess_failed": {
+            "default": false,
+            "title": "Reprocess Failed",
+            "type": "boolean"
+          },
+          "retention_expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retention Expires At"
+          },
+          "state": {
+            "$ref": "#/components/schemas/RecordingState"
+          }
+        },
+        "required": [
+          "id",
+          "captured_at",
+          "captured_on",
+          "duration_seconds",
+          "language",
+          "audio_format",
+          "state"
+        ],
+        "title": "Recording",
+        "type": "object"
+      },
+      "RecordingState": {
+        "description": "Where a recording is in the pipeline (data-model.md transitions).",
+        "enum": [
+          "pending_upload",
+          "uploaded",
+          "transcribing",
+          "extracting",
+          "processed",
+          "no_inspection",
+          "failed"
+        ],
+        "title": "RecordingState",
+        "type": "string"
+      },
+      "ReprocessRequest": {
+        "additionalProperties": false,
+        "description": "Re-run the pipeline, optionally against a corrected language (FR-026b).",
+        "properties": {
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "ReprocessRequest",
+        "type": "object"
+      },
+      "ResolveHive": {
+        "additionalProperties": false,
+        "description": "Resolve a flagged hive: pick one, or create one (FR-015b).",
+        "properties": {
+          "hive_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hive Id"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          }
+        },
+        "title": "ResolveHive",
+        "type": "object"
+      },
+      "SegmentRef": {
+        "additionalProperties": false,
+        "description": "A pointer to the transcript segment a phrase was spoken in (FR-023).",
+        "properties": {
+          "end_seconds": {
+            "title": "End Seconds",
+            "type": "number"
+          },
+          "segment_index": {
+            "title": "Segment Index",
+            "type": "integer"
+          },
+          "start_seconds": {
+            "title": "Start Seconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "segment_index",
+          "start_seconds",
+          "end_seconds"
+        ],
+        "title": "SegmentRef",
+        "type": "object"
+      },
+      "StoresState": {
+        "description": "How much honey and pollen the colony holds.",
+        "enum": [
+          "plentiful",
+          "adequate",
+          "low",
+          "none"
+        ],
+        "title": "StoresState",
+        "type": "string"
+      },
+      "Temperament": {
+        "description": "How the colony behaved during the inspection.",
+        "enum": [
+          "calm",
+          "nervous",
+          "defensive",
+          "aggressive"
+        ],
+        "title": "Temperament",
+        "type": "string"
+      },
+      "Transcript": {
+        "additionalProperties": false,
+        "description": "A full transcript. Outlives the audio (FR-027c).\n\nAttributes:\n    id: Transcript identifier.\n    recording_id: The recording it transcribes.\n    full_text: The whole transcript.\n    segments: Ordered, non-overlapping timed segments.\n    language_detected: What the ASR detected; informational only, the\n        account setting governs (FR-026e).",
+        "properties": {
+          "full_text": {
+            "title": "Full Text",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "language_detected": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recording_id": {
+            "format": "uuid",
+            "title": "Recording Id",
+            "type": "string"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptSegment"
+            },
+            "title": "Segments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "recording_id",
+          "full_text",
+          "segments"
+        ],
+        "title": "Transcript",
+        "type": "object"
+      },
+      "TranscriptSegment": {
+        "additionalProperties": false,
+        "description": "One timed passage of a transcript.",
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "end_seconds": {
+            "title": "End Seconds",
+            "type": "number"
+          },
+          "start_seconds": {
+            "title": "Start Seconds",
+            "type": "number"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "start_seconds",
+          "end_seconds"
+        ],
+        "title": "TranscriptSegment",
+        "type": "object"
+      },
+      "Treatment": {
+        "additionalProperties": false,
+        "description": "A product applied to the colony. Never inferred (FR-014c).\n\nAttributes:\n    product: The product as spoken; no controlled vocabulary.\n    dose: The dose as spoken; not normalised into units.\n    applied_on: When it was applied, if said.",
+        "properties": {
+          "applied_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied On"
+          },
+          "dose": {
+            "$ref": "#/components/schemas/ObservationField_str_"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ObservationField_str_"
+          }
+        },
+        "required": [
+          "product",
+          "dose"
+        ],
+        "title": "Treatment",
+        "type": "object"
+      },
+      "TreatmentInput": {
+        "additionalProperties": false,
+        "description": "A treatment as the beekeeper enters or corrects it.",
+        "properties": {
+          "applied_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied On"
+          },
+          "dose": {
+            "default": "",
+            "title": "Dose",
+            "type": "string"
+          },
+          "product": {
+            "minLength": 1,
+            "title": "Product",
+            "type": "string"
+          }
+        },
+        "required": [
+          "product"
+        ],
+        "title": "TreatmentInput",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Melliscribe",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/hives": {
+      "get": {
+        "description": "List the hives.\n\nArgs:\n    session: The database session.\n\nReturns:\n    The hives.",
+        "operationId": "list_hives_hives_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Hive"
+                  },
+                  "title": "Response List Hives Hives Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Hives",
+        "tags": [
+          "hives"
+        ]
+      },
+      "post": {
+        "description": "Create a hive from an identifier alone; refuse a duplicate.\n\nArgs:\n    body: The identifier.\n    session: The database session.\n\nReturns:\n    The new hive.",
+        "operationId": "create_hive_hives_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HiveCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hive"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Hive",
+        "tags": [
+          "hives"
+        ]
+      }
+    },
+    "/recordings": {
+      "get": {
+        "description": "List recordings, including what is queued and what failed (FR-018).\n\nArgs:\n    session: The database session.\n    state: Only recordings in this state.\n\nReturns:\n    The recordings, newest first.",
+        "operationId": "list_recordings_recordings_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/RecordingState"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Recording"
+                  },
+                  "title": "Response List Recordings Recordings Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Recordings",
+        "tags": [
+          "recordings"
+        ]
+      },
+      "post": {
+        "description": "Accept a recording, idempotently on its client-generated id (FR-020).\n\nAnswers 201 or 200 only once the audio is durably stored: only those let\nthe phone drop its local copy (FR-003).\n\nArgs:\n    id: The client-generated recording id.\n    captured_at: When it was captured, with the device's offset.\n    duration_seconds: Its length.\n    language: The account language at capture.\n    audio_format: Its media type as detected on the device.\n    audio: The audio.\n    response: Used to answer 200 for a repeat.\n    services: The application's services.\n    background: Where processing is queued.\n\nReturns:\n    The recording.\n\nRaises:\n    AppError: On an unsupported format, an oversize file or a failed write.",
+        "operationId": "upload_recording_recordings_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_recording_recordings_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recording"
+                }
+              }
+            },
+            "description": "Already held; same id."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recording"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Upload Recording",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/recordings/expiring": {
+      "get": {
+        "description": "List recordings whose audio expires soon, flagging the louder warning.\n\nArgs:\n    session: The database session.\n    within_days: How far ahead to look.\n\nReturns:\n    The recordings, soonest first.",
+        "operationId": "list_expiring_recordings_expiring_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "within_days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Within Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExpiringRecording"
+                  },
+                  "title": "Response List Expiring Recordings Expiring Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Expiring",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/recordings/{recording_id}": {
+      "delete": {
+        "description": "Delete the audio now, whatever the retention setting (FR-027b).\n\nThe transcript and the record are untouched (FR-027c).\n\nArgs:\n    recording_id: The recording.\n    services: The application's services.\n\nReturns:\n    An empty 204.",
+        "operationId": "delete_recording_audio_recordings__recording_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recording_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Recording Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Recording Audio",
+        "tags": [
+          "recordings"
+        ]
+      },
+      "get": {
+        "description": "Return one recording.\n\nArgs:\n    recording_id: The recording.\n    session: The database session.\n\nReturns:\n    The recording.",
+        "operationId": "get_recording_recordings__recording_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recording_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Recording Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recording"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Recording",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/recordings/{recording_id}/audio": {
+      "get": {
+        "description": "Stream the audio, with range requests for per-field playback (FR-023).\n\nArgs:\n    recording_id: The recording.\n    services: The application's services.\n    range_header: An optional `Range` header.\n\nReturns:\n    The audio, or the requested passage.\n\nRaises:\n    AppError: 410 once the audio is deleted or expired (FR-027d).",
+        "operationId": "get_audio_recordings__recording_id__audio_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recording_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Recording Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Range",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "audio/*": {}
+            },
+            "description": "Successful Response"
+          },
+          "206": {
+            "content": {
+              "audio/*": {}
+            },
+            "description": "Partial Content"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Audio",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/recordings/{recording_id}/eval-consent": {
+      "post": {
+        "description": "Record, with its date, whether this recording may be used for evaluation.\n\nConsent is explicit, separate and per recording (FR-027f); withdrawing it\nclears the date.\n\nArgs:\n    recording_id: The recording.\n    body: Whether the beekeeper consents.\n    services: The application's services.\n\nReturns:\n    The recording.",
+        "operationId": "set_eval_consent_recordings__recording_id__eval_consent_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recording_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Recording Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvalConsent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recording"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Eval Consent",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/recordings/{recording_id}/reprocess": {
+      "post": {
+        "description": "Re-run the pipeline, optionally in a corrected language (FR-026b).\n\nConfirmed fields are preserved (FR-026c); on failure the previous record\nstays intact and the recording's `reprocess_failed` says so (FR-019c).\n\nArgs:\n    recording_id: The recording.\n    body: The corrected language, if any.\n    services: The application's services.\n    background: Where processing is queued.\n\nReturns:\n    The recording.",
+        "operationId": "reprocess_recording_recordings__recording_id__reprocess_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recording_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Recording Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReprocessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recording"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reprocess Recording",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/recordings/{recording_id}/retry": {
+      "post": {
+        "description": "Re-queue a failed recording, reusing a transcript that succeeded (FR-019a).\n\nArgs:\n    recording_id: The recording.\n    services: The application's services.\n    background: Where processing is queued.\n\nReturns:\n    The recording.\n\nRaises:\n    AppError: When the recording has not failed.",
+        "operationId": "retry_recording_recordings__recording_id__retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recording_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Recording Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recording"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Recording",
+        "tags": [
+          "recordings"
+        ]
+      }
+    },
+    "/records": {
+      "get": {
+        "description": "List records, newest inspection first.\n\nArgs:\n    session: The database session.\n    hive_id: Only this hive.\n    confirmed: Only confirmed, or only unconfirmed, records.\n    date_from: Only inspections on or after this day.\n    date_to: Only inspections on or before this day.\n\nReturns:\n    The records.",
+        "operationId": "list_records_records_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hive_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Hive Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "confirmed",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Confirmed"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RecordView"
+                  },
+                  "title": "Response List Records Records Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Records",
+        "tags": [
+          "records"
+        ]
+      }
+    },
+    "/records/{record_id}": {
+      "get": {
+        "description": "Return one record, with every field's status, phrase and segment.\n\nArgs:\n    record_id: The record.\n    session: The database session.\n\nReturns:\n    The record.",
+        "operationId": "get_record_records__record_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Record Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Record",
+        "tags": [
+          "records"
+        ]
+      },
+      "patch": {
+        "description": "Correct or confirm fields; every field set becomes `CONFIRMED` (FR-010).\n\nArgs:\n    record_id: The record.\n    patch: The corrections, with the version they are based on.\n    session: The database session.\n\nReturns:\n    The corrected record.",
+        "operationId": "patch_record_records__record_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Record Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Record",
+        "tags": [
+          "records"
+        ]
+      }
+    },
+    "/records/{record_id}/confirm": {
+      "post": {
+        "description": "Confirm the record as a whole. Optional: unconfirmed is a valid state.\n\nArgs:\n    record_id: The record.\n    session: The database session.\n\nReturns:\n    The confirmed record.\n\nRaises:\n    AppError: When fields still need checking.",
+        "operationId": "confirm_records__record_id__confirm_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Record Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Confirm",
+        "tags": [
+          "records"
+        ]
+      }
+    },
+    "/records/{record_id}/resolve-hive": {
+      "post": {
+        "description": "Resolve a flagged hive by picking one or creating one (FR-015b).\n\nCreating here is still the beekeeper's explicit action (FR-015c).\n\nArgs:\n    record_id: The record.\n    body: An existing hive id, or an identifier to create.\n    session: The database session.\n\nReturns:\n    The record with its hive confirmed.",
+        "operationId": "resolve_hive_records__record_id__resolve_hive_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Record Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveHive"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resolve Hive",
+        "tags": [
+          "records"
+        ]
+      }
+    },
+    "/settings": {
+      "get": {
+        "description": "Return the settings. The language is never inferred from the request.\n\nArgs:\n    session: The database session.\n\nReturns:\n    The settings.",
+        "operationId": "get_settings_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings",
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "description": "Change the language or the audio retention period.\n\nArgs:\n    update: The fields to change.\n    session: The database session.\n\nReturns:\n    The updated settings.",
+        "operationId": "update_settings_settings_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountSettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountSettings"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Settings",
+        "tags": [
+          "settings"
+        ]
+      }
+    }
+  }
+}

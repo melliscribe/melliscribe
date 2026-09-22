@@ -257,3 +257,42 @@ InspectionRecord ──< ObservationField ──> SegmentRef ──> TranscriptS
 `Recording` is the only entity that can disappear while its neighbours remain.
 Every relationship that crosses it — record, transcript, field, trace — is built
 to survive its deletion, which is FR-027c stated structurally.
+
+---
+
+## Implementation notes (written back from `/speckit-implement`)
+
+Divergences from the model above, made during implementation. The Pydantic
+models in `backend/src/melliscribe/models/` are authoritative.
+
+- **`ObservationField.verbatim` is a list** and `segment_ref` is
+  **`segment_refs`**, a list: FR-006b requires every contributing phrase, and
+  each phrase has its own position in the audio.
+- **`ObservationField.proposal`** holds an `UNCERTAIN` field's best guess,
+  separately from `value`, so a proposal can never be read as set (FR-006e).
+  `value` is None on every `UNCERTAIN` field.
+- **`ObservationField.flag_reason`** (a language-neutral `FlagReason`) says
+  why a field is `UNCERTAIN`, so the beekeeper is told why (FR-015e) in their
+  language.
+- **`CONFIRMED` may carry a null value**: the beekeeper confirming that
+  something was not observed.
+- **`hive` and `inspection_date` are observation fields** (`ObservationField[UUID]`,
+  `ObservationField[date]`), so they carry status, verbatim and flags like the
+  others. `InspectionRecord.hive_id` is a property. The record also holds
+  `captured_on` (both dates stay visible, FR-016a), `spoken_hive_identifier`
+  (to create the hive from review, FR-015b) and `detected_language` (FR-026e).
+- **`ActionToDo` and `Treatment` hold `ObservationField[str]`s**, so actions
+  and treatments are also system-derived or confirmed (FR-009).
+- **`RecordingState` gains `NO_INSPECTION`** (FR-016b) and `Recording` gains
+  `captured_on`, `failure_stage` (FR-019b), `reprocess_failed` (FR-019c) and
+  `eval_consent_at` (FR-027f).
+- **Storage**: observation fields, treatments and actions are stored as the
+  record's validated JSON document, with hive, date and confirmation
+  denormalised for filtering — not as separate tables.
+- **Controlled vocabularies** as shipped (version 1):
+  `queen_seen` = seen | not_seen | not_looked_for;
+  `brood` = all_stages | no_eggs | no_brood | patchy | drone_brood_only;
+  `stores` = plentiful | adequate | low | none;
+  `temperament` = calm | nervous | defensive | aggressive.
+  Definitions and membership criteria live in `models/vocabulary.py`; released
+  values are locked by `vocabulary.lock.json`.

@@ -1,0 +1,17 @@
+{
+  "error": {
+    "validation_error": "Certaines informations envoyées ne sont pas valides.",
+    "unsupported_audio_format": "Ce format audio ({audio_format}) n'est pas pris en charge. Votre enregistrement a été conservé sur votre téléphone.",
+    "audio_too_large": "Cet enregistrement est trop volumineux pour être envoyé.",
+    "storage_unavailable": "L'enregistrement n'a pas pu être stocké en sécurité. Il est toujours sur votre téléphone et sera renvoyé.",
+    "duplicate_hive": "Vous avez déjà une ruche nommée « {identifier} ».",
+    "hive_not_found": "Cette ruche n'existe pas.",
+    "recording_not_found": "Cet enregistrement n'existe pas.",
+    "record_not_found": "Cette fiche de visite n'existe pas.",
+    "record_changed": "Cette fiche a changé pendant que vous la modifiiez. Rechargez-la et réessayez.",
+    "record_has_open_flags": "Certains champs sont encore à vérifier avant de pouvoir confirmer la fiche.",
+    "audio_gone": "Cet enregistrement n'est plus conservé.",
+    "not_retryable": "Cet enregistrement n'attend pas de nouvel essai.",
+    "hive_choice_required": "Choisissez une ruche existante ou donnez un nom pour en créer une."
+  }
+}
